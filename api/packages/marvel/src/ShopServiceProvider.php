@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Gate;
 use Marvel\Console\AdminCreateCommand;
 use Marvel\Console\CopyFilesCommand;
 use Marvel\Console\ImportDemoData;
+use Marvel\Enums\ManufacturerType;
 use Marvel\Enums\ProductType;
 use Marvel\Enums\RefundStatus;
 use Marvel\Enums\WithdrawStatus;
@@ -48,6 +49,7 @@ class ShopServiceProvider extends ServiceProvider
         WithdrawStatus::class,
         RefundStatus::class,
         PaymentGatewayType::class,
+        ManufacturerType::class,
     ];
 
     protected $commandList = [
@@ -150,6 +152,7 @@ class ShopServiceProvider extends ServiceProvider
             'scout' => File::getRequire(__DIR__ . '/../config/scout.php'),
             'sluggable' => File::getRequire(__DIR__ . '/../config/sluggable.php'),
             'constants' => File::getRequire(__DIR__ . '/../config/constants.php'),
+            'newsletter' => File::getRequire(__DIR__ . '/../config/newsletter.php'),
         ]);
 
         // Register the service the package provides.

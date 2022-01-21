@@ -4,12 +4,13 @@
 namespace Marvel\Database\Repositories;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Marvel\Database\Models\Product;
 use Marvel\Database\Models\Tax;
 use Marvel\Database\Models\Shipping;
 use Marvel\Database\Models\Settings;
 use Illuminate\Support\Facades\Log;
-use Marvel\Database\Models\VariationOption;
+use Marvel\Database\Models\Variation;
 use Marvel\Exceptions\MarvelException;
 use Marvel\Traits\Wallets;
 
@@ -19,8 +20,8 @@ class CheckoutRepository
 
     public function verify($request)
     {
-        $user = $request->user();
-        $wallet = $user->wallet;
+        $user = $request->user() ?? null;
+        $wallet = $user->wallet ?? null;
         $settings = Settings::first();
         $minimumOrderAmount = isset($settings['options']['minimumOrderAmount']) ? $settings['options']['minimumOrderAmount'] : 0;
         $unavailable_products = $this->checkStock($request['products']);
@@ -52,7 +53,7 @@ class CheckoutRepository
     {
         $tax_class = $this->getTaxClass($request);
         if ($tax_class) {
-            return $this->getTotalTax($amount, $tax_class, $shipping_charge);
+            return $this->getTotalTax($amount, $tax_class);
         }
         return $tax_class;
     }
@@ -71,6 +72,11 @@ class CheckoutRepository
     public function calculateShippingCharge($request, $amount)
     {
         try {
+            $ordered_products = $request['products'];
+            $physical_products = Product::whereIn('id', Arr::pluck($ordered_products, 'product_id'))->where('is_digital', false)->get();
+            if (!count($physical_products)) {
+                return 0;
+            }
             $settings = Settings::first();
             $class_id = $settings['options']['shippingClass'];
             if ($class_id) {
@@ -134,7 +140,7 @@ class CheckoutRepository
     protected function isVariationInStock($variation_id, $order_quantity)
     {
         try {
-            $variationOption = VariationOption::findOrFail($variation_id);
+            $variationOption = Variation::findOrFail($variation_id);
             if ($order_quantity > $variationOption->quantity) {
                 return $variationOption->product_id;
             }
@@ -150,14 +156,12 @@ class CheckoutRepository
             case 'fixed':
                 return $shipping_class->amount;
                 break;
-            case 'free':
-                return 0;
-                break;
             case 'percentage':
                 return ($shipping_class->amount * $amount) / 100;
                 break;
+            default:
+                return 0;
         }
-        return 0;
     }
 
     protected function getTaxClass($request)
@@ -197,12 +201,8 @@ class CheckoutRepository
             ->first();
     }
 
-    protected function getTotalTax($amount, $tax_class, $shipping_charge)
+    protected function getTotalTax($amount, $tax_class)
     {
-        $tax = ($amount * $tax_class->rate) / 100;
-        // if ($tax_class->on_shipping) {
-        //     $tax += $shipping_charge;
-        // }
-        return $tax;
+        return ($amount * $tax_class->rate) / 100;
     }
 }

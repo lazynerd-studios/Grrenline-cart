@@ -14,12 +14,18 @@ const getPreviewImage = (value: any) => {
   }
   return images;
 };
-export default function Uploader({ onChange, value, multiple }: any) {
+export default function Uploader({
+  onChange,
+  value,
+  multiple,
+  acceptFile,
+  helperText,
+}: any) {
   const { t } = useTranslation();
   const [files, setFiles] = useState<Attachment[]>(getPreviewImage(value));
   const { mutate: upload, isLoading: loading } = useUploadMutation();
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
+    ...(!acceptFile ? { accept: "image/*" } : {}),
     multiple,
     onDrop: async (acceptedFiles) => {
       if (acceptedFiles.length) {
@@ -54,15 +60,61 @@ export default function Uploader({ onChange, value, multiple }: any) {
     }
   };
   const thumbs = files?.map((file: any, idx) => {
+    const imgTypes = [
+      "tif",
+      "tiff",
+      "bmp",
+      "jpg",
+      "jpeg",
+      "gif",
+      "png",
+      "eps",
+      "raw",
+    ];
+    // let filename, fileType, isImage;
     if (file.id) {
+      // if (!file?.thumbnail) {
+      const splitArray = file?.original?.split("/");
+      let fileSplitName = splitArray[splitArray?.length - 1]?.split("."); // it will create an array of words of filename
+
+      // filename = splitArray[splitArray?.length - 1];
+
+      // fileType = filename?.split(".")[1];
+
+      // fileType = filename?.split(".").pop();
+
+      const fileType = fileSplitName.pop(); // it will pop the last item from the fileSplitName arr which is the file ext
+      const filename = fileSplitName.join("."); // it will join the array with dot, which restore the original filename
+      const isImage = file?.thumbnail && imgTypes.includes(fileType); // check if the original filename has the img ext
+
       return (
         <div
-          className="inline-flex flex-col overflow-hidden border border-border-200 rounded mt-2 me-2 relative"
+          className={`inline-flex flex-col overflow-hidden rounded mt-2 me-2 relative ${
+            isImage ? "border border-border-200" : ""
+          }`}
           key={idx}
         >
-          <div className="flex items-center justify-center min-w-0 w-16 h-16 overflow-hidden">
-            <img src={file.thumbnail} />
-          </div>
+          {/* {file?.thumbnail && isImage ? ( */}
+          {isImage ? (
+            <div className="flex items-center justify-center min-w-0 w-16 h-16 overflow-hidden">
+              <img src={file.thumbnail} />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center min-w-0 w-14 h-14 overflow-hidden">
+                <img src="/zip.png" />
+              </div>
+              <p className="flex items-baseline text-xs text-body p-1 cursor-default">
+                <span
+                  className="max-w-[64px] inline-block whitespace-nowrap overflow-ellipsis overflow-hidden"
+                  title={`${filename}.${fileType}`}
+                >
+                  {filename}
+                </span>
+                .{fileType}
+              </p>
+            </div>
+          )}
           {multiple ? (
             <button
               className="w-4 h-4 flex items-center justify-center rounded-full bg-red-600 text-xs text-light absolute top-1 end-1 shadow-xl outline-none"
@@ -95,11 +147,17 @@ export default function Uploader({ onChange, value, multiple }: any) {
         <input {...getInputProps()} />
         <UploadIcon className="text-muted-light" />
         <p className="text-body text-sm mt-4 text-center">
-          <span className="text-accent font-semibold">
-            {t("text-upload-highlight")}
-          </span>{" "}
-          {t("text-upload-message")} <br />
-          <span className="text-xs text-body">{t("text-img-format")}</span>
+          {helperText ? (
+            <span className="font-semibold text-gray-500">{helperText}</span>
+          ) : (
+            <>
+              <span className="text-accent font-semibold">
+                {t("text-upload-highlight")}
+              </span>{" "}
+              {t("text-upload-message")} <br />
+              <span className="text-xs text-body">{t("text-img-format")}</span>
+            </>
+          )}
         </p>
       </div>
 

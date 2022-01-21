@@ -25,6 +25,10 @@ import {
   QueryOrderStatusesOrderByColumn,
   SortOrder,
 } from "__generated__/__types__";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePdf from "@components/order/invoice-pdf";
+import { DownloadIcon } from "@components/icons/download-icon";
+import { useSettings } from "@contexts/settings.context";
 
 type FormValues = {
   order_status: any;
@@ -32,6 +36,7 @@ type FormValues = {
 export default function OrderDetailsPage() {
   const { t } = useTranslation();
   const { query } = useRouter();
+  const settings = useSettings();
   const { alignLeft, alignRight } = useIsRTL();
 
   const [updateOrder, { loading: updating }] = useUpdateOrderMutation({
@@ -101,6 +106,7 @@ export default function OrderDetailsPage() {
       amount: data?.order?.sales_tax!,
     }
   );
+
   if (loading) return <Loader text={t("common:text-loading")} />;
   if (error) return <ErrorMessage message={error.message} />;
 
@@ -150,6 +156,35 @@ export default function OrderDetailsPage() {
 
   return (
     <Card>
+      <div className="flex w-full">
+        <PDFDownloadLink
+          className="inline-flex items-center justify-center flex-shrink-0 font-semibold leading-none rounded outline-none transition duration-300 ease-in-out focus:outline-none focus:shadow focus:ring-1 focus:ring-accent-700 text-light border border-transparent px-5 py-0 h-12 ms-auto mb-5 bg-blue-500 hover:bg-blue-600"
+          document={
+            <InvoicePdf
+              subtotal={subtotal}
+              total={total}
+              discount={discount}
+              delivery_fee={delivery_fee}
+              sales_tax={sales_tax}
+              settings={settings}
+              order={data?.order}
+            />
+          }
+          fileName="invoice.pdf"
+        >
+          {({ loading }: any) =>
+            loading ? (
+              t("common:text-loading")
+            ) : (
+              <>
+                <DownloadIcon className="h-4 w-4 me-3" />
+                {t("common:text-download")} {t("common:text-invoice")}
+              </>
+            )
+          }
+        </PDFDownloadLink>
+      </div>
+
       <div className="flex flex-col lg:flex-row items-center">
         <h3 className="text-2xl font-semibold text-heading text-center lg:text-start w-full lg:w-1/3 mb-8 lg:mb-0 whitespace-nowrap">
           {t("form:input-label-order-id")} - {data?.order?.tracking_number}

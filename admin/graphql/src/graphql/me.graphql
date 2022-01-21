@@ -3,25 +3,39 @@ query Me {
     id
     name
     email
-    is_active
     profile {
       id
-      bio
-      contact
       avatar {
+        id
         thumbnail
         original
-        id
       }
+      bio
+      socials {
+        type
+        link
+      }
+      contact
     }
     address {
+      id
+      title
+      default
+      type
       address {
-        city
-        zip
-        state
         country
+        city
+        state
+        zip
         street_address
       }
     }
+    wallet {
+      id
+      total_points
+      points_used
+      available_points
+    }
+    is_active
   }
 }

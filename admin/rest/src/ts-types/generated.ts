@@ -1,4 +1,5 @@
 export declare type Maybe<T> = T | null;
+export declare type InputMaybe<T> = Maybe<T>;
 /** All built-in and custom scalars, mapped to their actual values */
 export declare type Scalars = {
   ID: string;
@@ -20,6 +21,12 @@ export declare type Scalars = {
   /** A datetime and timezone string in ISO 8601 format `Y-m-dTH:i:sO`, e.g. `2020-04-20T13:53:12+02:00`. */
   DateTimeTz: any;
 };
+
+export enum AddressType {
+  Billing = "billing",
+  Shipping = "shipping",
+}
+
 export declare type Address = {
   id: Scalars["ID"];
   title?: Maybe<Scalars["String"]>;
@@ -34,6 +41,9 @@ export declare type UserAddress = {
   state?: Maybe<Scalars["String"]>;
   zip?: Maybe<Scalars["String"]>;
   street_address?: Maybe<Scalars["String"]>;
+};
+export declare type MakeAdminInput = {
+  user_id: Scalars["ID"];
 };
 export declare type User = {
   id: Scalars["ID"];
@@ -139,10 +149,13 @@ export declare type Product = {
   categories: Array<Category>;
   variations?: Maybe<Array<Maybe<AttributeValue>>>;
   variation_options?: Maybe<Array<Maybe<Variation>>>;
+  digital_file?: Maybe<DigitalFile>;
   pivot?: Maybe<OrderProductPivot>;
   orders: Array<Order>;
   description?: Maybe<Scalars["String"]>;
   in_stock?: Maybe<Scalars["Boolean"]>;
+  is_digital?: Maybe<Scalars["Boolean"]>;
+  is_external?: Maybe<Scalars["Boolean"]>;
   is_taxable?: Maybe<Scalars["Boolean"]>;
   sale_price?: Maybe<Scalars["Float"]>;
   sku?: Maybe<Scalars["String"]>;
@@ -155,6 +168,8 @@ export declare type Product = {
   price: Scalars["Float"];
   quantity?: Maybe<Scalars["Int"]>;
   unit?: Maybe<Scalars["String"]>;
+  external_product_url?: Maybe<Scalars["String"]>;
+  external_product_button_text?: Maybe<Scalars["String"]>;
   created_at: Scalars["DateTime"];
   updated_at: Scalars["DateTime"];
 };
@@ -163,6 +178,8 @@ export declare type Variation = {
   __typename?: "Variation";
   id?: Maybe<Scalars["ID"]>;
   title?: Maybe<Scalars["String"]>;
+  image?: Maybe<Attachment>;
+  digital_file?: Maybe<DigitalFile>;
   price?: Maybe<Scalars["Float"]>;
   sku?: Maybe<Scalars["String"]>;
   is_disable?: Maybe<Scalars["Boolean"]>;
@@ -170,16 +187,16 @@ export declare type Variation = {
   quantity?: Maybe<Scalars["Int"]>;
   options?: Maybe<Array<Maybe<VariationOption>>>;
 };
-export declare type VariationInput = {
-  id?: Maybe<Scalars["ID"]>;
-  title?: Maybe<Scalars["String"]>;
-  sku?: Maybe<Scalars["String"]>;
-  is_disable?: Maybe<Scalars["Boolean"]>;
-  sale_price?: Maybe<Scalars["Float"]>;
-  price?: Maybe<Scalars["Float"]>;
-  quantity?: Maybe<Scalars["Int"]>;
-  options?: Maybe<Array<Maybe<VariationOptionInput>>>;
+
+export type DigitalFile = {
+  __typename?: "DigitalFile";
+  created_at?: Maybe<Scalars["DateTime"]>;
+  id: Scalars["ID"];
+  attachment_id: Scalars["ID"];
+  updated_at?: Maybe<Scalars["DateTime"]>;
+  url: Scalars["String"];
 };
+
 export declare type VariationOption = {
   __typename?: "VariationOption";
   name?: Maybe<Scalars["String"]>;
@@ -534,6 +551,31 @@ export declare type OrderStatusUpdateInput = {
   serial: Scalars["Int"];
 };
 
+export type DigitalFileInput = {
+  attachment_id: Scalars["ID"];
+  id?: InputMaybe<Scalars["ID"]>;
+  url: Scalars["String"];
+};
+
+export type VariationInput = {
+  digital_file?: InputMaybe<DigitalFileInput>;
+  id?: InputMaybe<Scalars["ID"]>;
+  image?: InputMaybe<AttachmentInput>;
+  is_digital?: InputMaybe<Scalars["Boolean"]>;
+  is_disable?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<Array<InputMaybe<VariationOptionInput>>>;
+  price: Scalars["Float"];
+  quantity: Scalars["Int"];
+  sale_price?: InputMaybe<Scalars["Float"]>;
+  sku: Scalars["String"];
+  title: Scalars["String"];
+};
+
+export type UpsertVariationsHasMany = {
+  delete?: InputMaybe<Array<Scalars["ID"]>>;
+  upsert?: InputMaybe<Array<VariationInput>>;
+};
+
 export declare type CreateProduct = {
   name: Scalars["String"];
   type_id: Scalars["String"];
@@ -546,6 +588,25 @@ export declare type CreateProduct = {
   variations?: Maybe<Array<AttributeProductPivot>>;
   in_stock?: Maybe<Scalars["Boolean"]>;
   is_taxable?: Maybe<Scalars["Boolean"]>;
+  author_id?: InputMaybe<Scalars["ID"]>;
+
+  digital_file?: InputMaybe<DigitalFileInput>;
+
+  external_product_button_text?: InputMaybe<Scalars["String"]>;
+
+  external_product_url?: InputMaybe<Scalars["String"]>;
+
+  is_external?: InputMaybe<Scalars["Boolean"]>;
+
+  manufacturer_id?: InputMaybe<Scalars["ID"]>;
+
+  max_price?: InputMaybe<Scalars["Float"]>;
+
+  min_price?: InputMaybe<Scalars["Float"]>;
+
+  variation_options?: InputMaybe<UpsertVariationsHasMany>;
+
+  video?: InputMaybe<AttachmentInput>;
   sku?: Maybe<Scalars["String"]>;
   gallery?: Maybe<Array<Maybe<AttachmentInput>>>;
   image?: Maybe<AttachmentInput>;
@@ -561,6 +622,7 @@ export declare type AttributeProductPivot = {
 export declare type UpdateProduct = {
   name: Scalars["String"];
   type_id: Scalars["String"];
+  shop_id: Scalars["String"];
   price: Scalars["Float"];
   sale_price?: Maybe<Scalars["Float"]>;
   quantity: Scalars["Int"];
@@ -989,4 +1051,114 @@ export declare type TypeSettingsInput = {
   isHome?: Maybe<Scalars["Boolean"]>;
   layoutType?: Maybe<Scalars["String"]>;
   productCard?: Maybe<Scalars["String"]>;
+};
+
+export declare type CreateAuthorInput = {
+  bio?: InputMaybe<Scalars["String"]>;
+  born?: InputMaybe<Scalars["String"]>;
+  cover_image?: InputMaybe<AttachmentInput>;
+  death?: InputMaybe<Scalars["String"]>;
+  image?: InputMaybe<AttachmentInput>;
+  is_approved?: InputMaybe<Scalars["Boolean"]>;
+  languages?: InputMaybe<Scalars["String"]>;
+  name: Scalars["String"];
+  quote?: InputMaybe<Scalars["String"]>;
+  shop_id?: InputMaybe<Scalars["ID"]>;
+  socials?: InputMaybe<Array<InputMaybe<ShopSocialInput>>>;
+};
+
+export declare type UpdateAuthorInput = {
+  bio?: InputMaybe<Scalars["String"]>;
+  born?: InputMaybe<Scalars["String"]>;
+  cover_image?: InputMaybe<AttachmentInput>;
+  death?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  image?: InputMaybe<AttachmentInput>;
+  is_approved?: InputMaybe<Scalars["Boolean"]>;
+  languages?: InputMaybe<Scalars["String"]>;
+  name: Scalars["String"];
+  quote?: InputMaybe<Scalars["String"]>;
+  shop_id?: InputMaybe<Scalars["ID"]>;
+  socials?: InputMaybe<Array<InputMaybe<ShopSocialInput>>>;
+};
+
+export declare type AuthorPaginator = {
+  __typename?: "AuthorPaginator";
+  /** A list of Author items. */
+
+  data: Array<Author>;
+  /** Pagination information about the list of items. */
+
+  paginatorInfo: PaginatorInfo;
+};
+
+export declare type Author = {
+  __typename?: "Author";
+  bio?: Maybe<Scalars["String"]>;
+  born?: Maybe<Scalars["String"]>;
+  cover_image?: Maybe<Attachment>;
+  created_at?: Maybe<Scalars["DateTime"]>;
+  death?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  image?: Maybe<Attachment>;
+  is_approved?: Maybe<Scalars["Boolean"]>;
+  languages?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  quote?: Maybe<Scalars["String"]>;
+  slug?: Maybe<Scalars["String"]>;
+  socials?: Maybe<Array<Maybe<ShopSocials>>>;
+  updated_at?: Maybe<Scalars["DateTime"]>;
+};
+
+export declare type CreateManufacturerInput = {
+  cover_image?: InputMaybe<AttachmentInput>;
+  description?: InputMaybe<Scalars["String"]>;
+  image?: InputMaybe<AttachmentInput>;
+  is_approved?: InputMaybe<Scalars["Boolean"]>;
+  name: Scalars["String"];
+  shop_id?: InputMaybe<Scalars["ID"]>;
+  socials?: InputMaybe<Array<InputMaybe<ShopSocialInput>>>;
+  type_id: Scalars["ID"];
+  website?: InputMaybe<Scalars["String"]>;
+};
+
+export declare type UpdateManufacturerInput = {
+  cover_image?: InputMaybe<AttachmentInput>;
+  description?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  image?: InputMaybe<AttachmentInput>;
+  is_approved?: InputMaybe<Scalars["Boolean"]>;
+  name: Scalars["String"];
+  shop_id?: InputMaybe<Scalars["ID"]>;
+  socials?: InputMaybe<Array<InputMaybe<ShopSocialInput>>>;
+  type_id: Scalars["ID"];
+  website?: InputMaybe<Scalars["String"]>;
+};
+
+export declare type Manufacturer = {
+  __typename?: "Manufacturer";
+  cover_image?: Maybe<Attachment>;
+  created_at?: Maybe<Scalars["DateTime"]>;
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  image?: Maybe<Attachment>;
+  is_approved?: Maybe<Scalars["Boolean"]>;
+  name: Scalars["String"];
+  slug?: Maybe<Scalars["String"]>;
+  socials?: Maybe<Array<Maybe<ShopSocials>>>;
+  type: Type;
+  type_id?: Maybe<Scalars["ID"]>;
+  updated_at?: Maybe<Scalars["DateTime"]>;
+  website?: Maybe<Scalars["String"]>;
+};
+/** A paginated list of Manufacturer items. */
+
+export declare type ManufacturerPaginator = {
+  __typename?: "ManufacturerPaginator";
+  /** A list of Manufacturer items. */
+
+  data: Array<Manufacturer>;
+  /** Pagination information about the list of items. */
+
+  paginatorInfo: PaginatorInfo;
 };

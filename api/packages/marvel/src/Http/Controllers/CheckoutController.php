@@ -26,11 +26,6 @@ class CheckoutController extends CoreController
      */
     public function verify(CheckoutVerifyRequest $request)
     {
-        $user = $request->user();
-        if ($user->can(Permission::CUSTOMER)) {
-            return $this->repository->verify($request);
-        } else {
-            throw new MarvelException(NOT_AUTHORIZED);
-        }
+        return $this->repository->verify($request);
     }
 }

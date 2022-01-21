@@ -11,6 +11,7 @@ export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   type?: string;
   shadow?: boolean;
   variant?: "normal" | "solid" | "outline";
+  dimension?: "small" | "medium" | "big";
 }
 const classes = {
   root: "px-4 h-12 flex items-center w-full rounded appearance-none transition duration-300 ease-in-out text-heading text-sm focus:outline-none focus:ring-0",
@@ -20,6 +21,11 @@ const classes = {
     "bg-gray-100 border border-border-100 focus:bg-light focus:border-accent",
   outline: "border border-border-base focus:border-accent",
   shadow: "focus:shadow",
+};
+const sizeClasses = {
+  small: "text-sm h-10",
+  medium: "h-12",
+  big: "h-14",
 };
 const Input = React.forwardRef<HTMLInputElement, Props>(
   (
@@ -31,6 +37,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       error,
       children,
       variant = "normal",
+      dimension = "medium",
       shadow = false,
       type = "text",
       inputClassName,
@@ -48,6 +55,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
       {
         [classes.shadow]: shadow,
       },
+      sizeClasses[dimension],
       inputClassName
     );
 

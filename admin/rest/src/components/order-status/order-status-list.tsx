@@ -104,7 +104,6 @@ const OrderStatusList = ({
         <ActionButtons
           id={id}
           editUrl={`${ROUTES.ORDER_STATUS}/edit/${record?.name}`}
-          deleteModalView="DELETE_ORDER_STATUS"
         />
       ),
     },

@@ -24,6 +24,7 @@ export default function CategoryTypeFilter({ refetch, className }: Props) {
   const { data: categoryData, loading: categoryLoading } = useCategoriesQuery({
     variables: {
       first: 999,
+      page: 1,
     },
     fetchPolicy: "network-only",
   });

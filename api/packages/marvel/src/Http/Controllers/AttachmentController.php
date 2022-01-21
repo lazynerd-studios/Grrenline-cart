@@ -48,15 +48,15 @@ class AttachmentController extends CoreController
             $attachment->save();
             $attachment->addMedia($media)->toMediaCollection();
             foreach ($attachment->getMedia() as $media) {
-                if (strpos($media->mime_type, 'video/') !== false) {
+                if (strpos($media->mime_type, 'image/') !== false) {
                     $converted_url = [
-                        'thumbnail' => '',
+                        'thumbnail' => $media->getUrl('thumbnail'),
                         'original' => $media->getUrl(),
                         'id' => $attachment->id
                     ];
                 } else {
                     $converted_url = [
-                        'thumbnail' => $media->getUrl('thumbnail'),
+                        'thumbnail' => '',
                         'original' => $media->getUrl(),
                         'id' => $attachment->id
                     ];

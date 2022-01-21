@@ -8,6 +8,8 @@ export const ROUTES = {
   FORGET_PASSWORD: "/forgot-password",
   ORDER_STATUS: "/order-status",
   ORDERS: "/orders",
+  CREATE_ORDER: "/orders/create",
+  CHECKOUT: "/orders/checkout",
   PRODUCTS: "/products",
   COUPONS: "/coupons",
   USERS: "/users",
@@ -26,4 +28,6 @@ export const ROUTES = {
   LOGOUT: "/logout",
   STAFFS: "/staffs",
   REFUNDS: "/refunds",
+  MANUFACTURERS: "/manufacturers",
+  AUTHORS: "/authors",
 };

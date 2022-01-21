@@ -163,25 +163,25 @@ const OrderList = ({ orders, onPagination, onSort, onOrder }: IProps) => {
         <div>{formatAddress(shipping_address)}</div>
       ),
     },
-    {
-      // title: "Download",
-      title: t("common:text-download"),
-      dataIndex: "id",
-      key: "download",
-      align: "center",
-      render: (_id: string, order: Order) => (
-        <div>
-          <PDFDownloadLink
-            document={<InvoicePdf order={order} />}
-            fileName="invoice.pdf"
-          >
-            {({ loading }: any) =>
-              loading ? t("common:text-loading") : t("common:text-download")
-            }
-          </PDFDownloadLink>
-        </div>
-      ),
-    },
+    // {
+    //   // title: "Download",
+    //   title: t("common:text-download"),
+    //   dataIndex: "id",
+    //   key: "download",
+    //   align: "center",
+    //   render: (_id: string, order: Order) => (
+    //     <div>
+    //       <PDFDownloadLink
+    //         document={<InvoicePdf order={order} />}
+    //         fileName="invoice.pdf"
+    //       >
+    //         {({ loading }: any) =>
+    //           loading ? t("common:text-loading") : t("common:text-download")
+    //         }
+    //       </PDFDownloadLink>
+    //     </div>
+    //   ),
+    // },
     {
       title: t("table:table-item-actions"),
       dataIndex: "id",

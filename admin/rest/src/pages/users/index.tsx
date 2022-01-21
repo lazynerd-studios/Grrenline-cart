@@ -11,6 +11,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ROUTES } from "@utils/routes";
 import { SortOrder } from "@ts-types/generated";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,6 +73,10 @@ export default function Customers() {
     </>
   );
 }
+
+Customers.authenticate = {
+  permissions: adminOnly,
+};
 Customers.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

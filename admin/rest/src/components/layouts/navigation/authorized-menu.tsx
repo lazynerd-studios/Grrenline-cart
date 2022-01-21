@@ -35,8 +35,18 @@ export default function AuthorizedMenu() {
       >
         <Menu.Items
           as="ul"
-          className="absolute right-0 w-48 py-4 mt-1 origin-top-right bg-white rounded shadow-700 focus:outline-none"
+          className="absolute right-0 w-48 mt-1 origin-top-right bg-white rounded shadow-md focus:outline-none"
         >
+          <Menu.Item key={data?.email}>
+            <li
+              className="w-full flex flex-col space-y-1 bg-[#00b791]
+             text-white text-sm rounded-t px-4 py-3"
+            >
+              <span className="font-semibold capitalize">{data?.name}</span>
+              <span className="text-xs">{data?.email}</span>
+            </li>
+          </Menu.Item>
+
           {siteSettings.authorizedLinks.map(({ href, labelTransKey }) => (
             <Menu.Item key={`${href}${labelTransKey}`}>
               {({ active }) => (

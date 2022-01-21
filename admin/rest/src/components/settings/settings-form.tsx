@@ -27,6 +27,8 @@ import { getIcon } from "@utils/get-icon";
 import * as socialIcons from "@components/icons/social";
 import GooglePlacesAutocomplete from "@components/form/google-places-autocomplete";
 import omit from "lodash/omit";
+import Checkbox from "@components/ui/checkbox/checkbox";
+import SwitchInput from "@components/ui/switch-input";
 
 type FormValues = {
   siteTitle: string;
@@ -34,6 +36,7 @@ type FormValues = {
   currency: any;
   minimumOrderAmount: number;
   logo: any;
+  useOtp: boolean;
   taxClass: Tax;
   shippingClass: Shipping;
   signupPoints: number;
@@ -284,6 +287,12 @@ export default function SettingsForm({
             variant="outline"
             className="mb-5"
           />
+
+          <div className="mb-5">
+            <Label>{t("form:input-label-enable-otp")}</Label>
+            <SwitchInput name="useOtp" control={control} />
+          </div>
+
           <div className="mb-5">
             <Label>{t("form:input-label-tax-class")}</Label>
             <SelectInput

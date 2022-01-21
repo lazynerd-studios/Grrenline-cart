@@ -11,6 +11,7 @@ import { useTypesQuery } from "@data/type/use-types.query";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ROUTES } from "@utils/routes";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function TypesPage() {
   const { t } = useTranslation();
@@ -62,6 +63,10 @@ export default function TypesPage() {
     </>
   );
 }
+
+TypesPage.authenticate = {
+  permissions: adminOnly,
+};
 
 TypesPage.Layout = Layout;
 

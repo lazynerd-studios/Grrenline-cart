@@ -21,6 +21,10 @@ import { useUpdateOrderMutation } from "@data/order/use-order-update.mutation";
 import { useOrderStatusesQuery } from "@data/order-status/use-order-statuses.query";
 import { useOrderQuery } from "@data/order/use-order.query";
 import { Attachment } from "@ts-types/generated";
+import { DownloadIcon } from "@components/icons/download-icon";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePdf from "@components/order/invoice-pdf";
+import { useSettings } from "@contexts/settings.context";
 
 type FormValues = {
   order_status: any;
@@ -28,6 +32,7 @@ type FormValues = {
 export default function OrderDetailsPage() {
   const { t } = useTranslation();
   const { query } = useRouter();
+  const settings = useSettings();
   const { alignLeft, alignRight } = useIsRTL();
   const { mutate: updateOrder, isLoading: updating } = useUpdateOrderMutation();
   const { data: orderStatusData } = useOrderStatusesQuery({
@@ -133,6 +138,32 @@ export default function OrderDetailsPage() {
 
   return (
     <Card>
+      <div className="flex w-full">
+        <Button size="small" className="ms-auto mb-5">
+          <DownloadIcon className="h-4 w-4 me-3" />
+          <PDFDownloadLink
+            document={
+              <InvoicePdf
+                subtotal={subtotal}
+                total={total}
+                discount={discount}
+                delivery_fee={delivery_fee}
+                sales_tax={sales_tax}
+                settings={settings}
+                order={data?.order}
+              />
+            }
+            fileName="invoice.pdf"
+          >
+            {({ loading }: any) =>
+              loading
+                ? t("common:text-loading")
+                : `${t("common:text-download")} ${t("common:text-invoice")}`
+            }
+          </PDFDownloadLink>
+        </Button>
+      </div>
+
       <div className="flex flex-col lg:flex-row items-center">
         <h3 className="text-2xl font-semibold text-heading text-center lg:text-start w-full lg:w-1/3 mb-8 lg:mb-0 whitespace-nowrap">
           {t("form:input-label-order-id")} - {data?.order?.tracking_number}

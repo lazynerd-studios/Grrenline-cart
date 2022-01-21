@@ -16,6 +16,7 @@ export default function Settings() {
     useShippingClassesQuery();
 
   const { data, isLoading: loading, error } = useSettingsQuery();
+  console.log("data:", data);
 
   if (loading || shippingLoading || taxLoading)
     return <Loader text={t("common:text-loading")} />;

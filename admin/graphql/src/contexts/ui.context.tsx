@@ -2,6 +2,7 @@ import React, { FC, useMemo } from "react";
 
 export interface State {
   displaySidebar: boolean;
+  displayCartSidebar: boolean;
   displayModal: boolean;
   modalData: any;
   modalView: string;
@@ -9,6 +10,7 @@ export interface State {
 
 const initialState = {
   displaySidebar: false,
+  displayCartSidebar: false,
   displayModal: false,
   modalView: "LOGIN_VIEW",
   modalData: null,
@@ -20,6 +22,12 @@ type Action =
     }
   | {
       type: "CLOSE_SIDEBAR";
+    }
+  | {
+      type: "OPEN_CART_SIDEBAR";
+    }
+  | {
+      type: "CLOSE_CART_SIDEBAR";
     }
   | {
       type: "OPEN_MODAL";
@@ -62,6 +70,18 @@ function uiReducer(state: State, action: Action) {
         displaySidebar: false,
       };
     }
+    case "OPEN_CART_SIDEBAR": {
+      return {
+        ...state,
+        displayCartSidebar: true,
+      };
+    }
+    case "CLOSE_CART_SIDEBAR": {
+      return {
+        ...state,
+        displayCartSidebar: false,
+      };
+    }
     case "OPEN_MODAL": {
       return {
         ...state,
@@ -98,6 +118,12 @@ export const UIProvider: FC = (props) => {
     state.displaySidebar
       ? dispatch({ type: "CLOSE_SIDEBAR" })
       : dispatch({ type: "OPEN_SIDEBAR" });
+  const openCartSidebar = () => dispatch({ type: "OPEN_CART_SIDEBAR" });
+  const closeCartSidebar = () => dispatch({ type: "CLOSE_CART_SIDEBAR" });
+  const toggleCartSidebar = () =>
+    state.displayCartSidebar
+      ? dispatch({ type: "CLOSE_CART_SIDEBAR" })
+      : dispatch({ type: "OPEN_CART_SIDEBAR" });
   const closeSidebarIfPresent = () =>
     state.displaySidebar && dispatch({ type: "CLOSE_SIDEBAR" });
 
@@ -115,6 +141,9 @@ export const UIProvider: FC = (props) => {
       openSidebar,
       closeSidebar,
       toggleSidebar,
+      openCartSidebar,
+      closeCartSidebar,
+      toggleCartSidebar,
       closeSidebarIfPresent,
       openModal,
       closeModal,

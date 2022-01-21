@@ -1,6 +1,23 @@
 import { QueryKey } from "react-query";
 import { SortOrder } from "./generated";
 
+export type AuthorsQueryOptionsType = {
+  text?: string;
+  is_approved?: boolean;
+  page?: number;
+  limit?: number;
+  orderBy?: string;
+  sortedBy?: SortOrder;
+};
+export type ManufacturersQueryOptionsType = {
+  text?: string;
+  is_approved?: boolean;
+  type?: string;
+  page?: number;
+  limit?: number;
+  orderBy?: string;
+  sortedBy?: SortOrder;
+};
 export type CategoriesQueryOptionsType = {
   type?: string;
   text?: string;

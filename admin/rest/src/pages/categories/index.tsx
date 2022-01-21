@@ -12,6 +12,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ROUTES } from "@utils/routes";
 import TypeFilter from "@components/category/type-filter";
 import { useCategoriesQuery } from "@data/category/use-categories.query";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function Categories() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,6 +62,7 @@ export default function Categories() {
               className="md:ms-6"
               onTypeFilter={({ slug }: { slug: string }) => {
                 setType(slug);
+                setPage(1);
               }}
             />
 
@@ -87,6 +89,10 @@ export default function Categories() {
     </>
   );
 }
+
+Categories.authenticate = {
+  permissions: adminOnly,
+};
 Categories.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

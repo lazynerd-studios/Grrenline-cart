@@ -92,6 +92,22 @@ class Product extends Model
     /**
      * @return BelongsTo
      */
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(Author::class, 'author_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function manufacturer(): BelongsTo
+    {
+        return $this->belongsTo(Manufacturer::class, 'manufacturer_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
     public function shipping(): BelongsTo
     {
         return $this->belongsTo(Shipping::class, 'shipping_class_id');
@@ -134,5 +150,10 @@ class Product extends Model
     public function variations(): BelongsToMany
     {
         return $this->belongsToMany(AttributeValue::class, 'attribute_product');
+    }
+
+    public function digital_file()
+    {
+        return $this->morphOne(DigitalFile::class, 'fileable');
     }
 }

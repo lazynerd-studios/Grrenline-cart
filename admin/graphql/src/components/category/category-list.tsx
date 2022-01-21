@@ -54,31 +54,6 @@ const CategoryList = ({ categories, onPagination, refetch }: IProps) => {
     },
   });
 
-  // const onHeaderClick = (value: string | undefined) => ({
-  //   onClick: () => {
-  //     setColumn(value);
-  //     setOrder(order === SortOrder.Desc ? SortOrder.Asc : SortOrder.Desc);
-  //     refetch({
-  //       orderBy: [
-  //         {
-  //           column: value,
-  //           order: order === SortOrder.Desc ? SortOrder.Asc : SortOrder.Desc,
-  //         },
-  //       ],
-  //     });
-
-  //     console.log("click");
-  //   },
-  // });
-
-  // const debouncedHeaderClick = useCallback(
-  //   debounce((value) => {
-  //     onHeaderClick(value);
-  //     console.log("lcick");
-  //   }, 300),
-  //   []
-  // );
-
   const columns = [
     {
       title: t("table:table-item-id"),
@@ -111,6 +86,7 @@ const CategoryList = ({ categories, onPagination, refetch }: IProps) => {
       dataIndex: "details",
       key: "details",
       align: alignLeft,
+      ellipsis: true,
       width: 200,
     },
     {

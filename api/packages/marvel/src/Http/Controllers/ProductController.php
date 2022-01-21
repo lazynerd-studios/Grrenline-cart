@@ -2,19 +2,18 @@
 
 namespace Marvel\Http\Controllers;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Marvel\Database\Models\Attribute;
-use Marvel\Database\Models\AttributeValue;
 use Marvel\Database\Repositories\ProductRepository;
 use Marvel\Database\Models\Product;
 use Marvel\Database\Models\Type;
-use Marvel\Database\Models\VariationOption;
+use Marvel\Database\Models\Variation;
 use Marvel\Exceptions\MarvelException;
 use Marvel\Http\Requests\ProductCreateRequest;
 use Marvel\Http\Requests\ProductUpdateRequest;
@@ -37,8 +36,11 @@ class ProductController extends CoreController
      */
     public function index(Request $request)
     {
+        if (in_array('variation_options.digital_files', explode(';', $request->with)) || in_array('digital_files', explode(';', $request->with))) {
+            throw new MarvelException(config('shop.app_notice_domain') . 'ERROR.NOT_AUTHORIZED');
+        }
         $limit = $request->limit ?   $request->limit : 15;
-        return $this->repository->with(['type', 'shop', 'categories', 'tags', 'variations.attribute'])->paginate($limit);
+        return $this->repository->paginate($limit);
     }
 
     /**
@@ -62,20 +64,41 @@ class ProductController extends CoreController
      * @param $slug
      * @return JsonResponse
      */
-    public function show($slug, Request $request)
+    public function show(Request $request, $slug)
     {
+        $request->slug = $slug;
+        return $this->fetchSingleProduct($request);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $slug
+     * @return JsonResponse
+     */
+    public function fetchSingleProduct(Request $request)
+    {
+        $slug = $request->slug;
+        $user = $request->user();
         try {
             $limit = isset($request->limit) ? $request->limit : 10;
             $product = $this->repository
-                ->with(['type', 'shop', 'categories', 'tags', 'variations.attribute.values', 'variation_options'])
+                ->with(['type', 'shop', 'categories', 'tags', 'variations.attribute.values', 'variation_options', 'author', 'manufacturer'])
                 ->findOneByFieldOrFail('slug', $slug);
-            $product->related_products = $this->repository->fetchRelated($slug, $limit);
-            return $product;
         } catch (\Exception $e) {
             throw new MarvelException(NOT_FOUND);
         }
-    }
 
+        $product->related_products = $this->repository->fetchRelated($slug, $limit);
+        if (
+            in_array('variation_options.digital_file', explode(';', $request->with)) || in_array('digital_file', explode(';', $request->with))
+        ) {
+            if (!$this->repository->hasPermission($user, $product->shop_id)) {
+                throw new MarvelException(config('shop.app_notice_domain') . 'ERROR.NOT_AUTHORIZED');
+            }
+        }
+        return $product;
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -181,7 +204,7 @@ class ProductController extends CoreController
 
         $products = $this->repository->where('shop_id', $shop_id)->get();
 
-        $list = VariationOption::WhereIn('product_id', $products->pluck('id'))->get()->toArray();
+        $list = Variation::WhereIn('product_id', $products->pluck('id'))->get()->toArray();
 
         if (!count($list)) {
             return response()->stream(function () {
@@ -247,6 +270,7 @@ class ProductController extends CoreController
                         Product::firstOrCreate($product);
                     }
                 } catch (Exception $e) {
+                    //
                 }
             }
             return true;
@@ -286,12 +310,61 @@ class ProductController extends CoreController
                 try {
                     $product = Type::findOrFail($attribute['product_id']);
                     if (isset($product->id)) {
-                        VariationOption::firstOrCreate($attribute);
+                        Variation::firstOrCreate($attribute);
                     }
                 } catch (Exception $e) {
+                    //
                 }
             }
             return true;
         }
+    }
+
+    public function fetchDigitalFilesForProduct(Request $request)
+    {
+        $user = $request->user();
+        if ($user) {
+            $product = $this->repository->with(['digital_file'])->findOrFail($request->parent_id);
+            if ($this->repository->hasPermission($user, $product->shop_id)) {
+                return $product->digital_file;
+            }
+        }
+    }
+
+    public function fetchDigitalFilesForVariation(Request $request)
+    {
+        $user = $request->user();
+        if ($user) {
+            $variation_option = Variation::with(['digital_file', 'product'])->findOrFail($request->parent_id);
+            if ($this->repository->hasPermission($user, $variation_option->product->shop_id)) {
+                return $variation_option->digital_file;
+            }
+        }
+    }
+
+    public function popularProducts(Request $request)
+    {
+        $limit = $request->limit ? $request->limit : 10;
+        $range = !empty($request->range) && $request->range !== 'undefined'  ? $request->range : '';
+        $type_id = $request->type_id ? $request->type_id : '';
+        if (isset($request->type_slug) && empty($type_id)) {
+            try {
+                $type = Type::where('slug', $request->type_slug)->firstOrFail();
+                $type_id = $type->id;
+            } catch (ModelNotFoundException $e) {
+                throw new MarvelException(NOT_FOUND);
+            }
+        }
+        $products_query = $this->repository->withCount('orders')->with(['type', 'shop'])->orderBy('orders_count', 'desc');
+        if (isset($request->shop_id)) {
+            $products_query = $products_query->where('shop_id', "=", $request->shop_id);
+        }
+        if ($range) {
+            $products_query = $products_query->whereDate('created_at', '>', Carbon::now()->subDays($range));
+        }
+        if ($type_id) {
+            $products_query = $products_query->where('type_id', '=', $type_id);
+        }
+        return $products_query->take($limit)->get();
     }
 }

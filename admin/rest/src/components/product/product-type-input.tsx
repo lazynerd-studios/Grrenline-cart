@@ -23,13 +23,13 @@ const ProductTypeInput = () => {
       <div className="mb-5">
         <Label>{t("form:form-title-product-type")}</Label>
         <SelectInput
-          name="productTypeValue"
+          name="product_type"
           control={control}
           getOptionLabel={(option: any) => option.name}
           getOptionValue={(option: any) => option.value}
           options={productType}
         />
-        <ValidationError message={t(errors.productTypeValue?.message)} />
+        <ValidationError message={t(errors.product_type?.message)} />
       </div>
     </Card>
   );

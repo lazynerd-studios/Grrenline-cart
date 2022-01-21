@@ -1,8 +1,8 @@
 import Select from "@components/ui/select/select";
-import { Controller } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 
 interface SelectInputProps {
-  control: any;
+  control: Control<any>;
   rules?: any;
   name: string;
   options: object[];

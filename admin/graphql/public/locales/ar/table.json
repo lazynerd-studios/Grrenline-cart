@@ -52,5 +52,8 @@
   "table-shipping-type": "نوع الشحن",
   "table-item-available_wallet_points": "نقاط المحفظة المتاحة",
   "table-item-order-id": "رقم التعريف الخاص بالطلب",
-  "table-item-customer-email": "البريد الإلكتروني للعميل"
+  "table-item-customer-email": "البريد الإلكتروني للعميل",
+  "table-item-is-approved": "تمت الموافقة",
+  "table-item-approval-action": "إجراء الموافقة",
+  "table-item-permissions": "أذونات"
 }

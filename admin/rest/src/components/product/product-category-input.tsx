@@ -27,7 +27,7 @@ const ProductCategoryInput = ({ control, setValue }: Props) => {
 
   const { data, isLoading: loading } = useCategoriesQuery({
     limit: 999,
-    type: type.slug,
+    type: type?.slug,
   });
 
   return (

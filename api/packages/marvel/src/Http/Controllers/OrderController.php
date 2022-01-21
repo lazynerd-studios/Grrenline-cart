@@ -79,23 +79,24 @@ class OrderController extends CoreController
      * @param int $id
      * @return JsonResponse
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, $params)
     {
-        $user = $request->user();
+        $user = $request->user() ?? null;
         try {
-            $order = $this->repository->with(['products', 'status', 'children.shop', 'wallet_point'])->findOrFail($id);
+            $order = $this->repository->with(['products', 'status', 'children.shop', 'wallet_point'])->where('id', $params)->orWhere('tracking_number', $params)->firstOrFail();
         } catch (\Exception $e) {
             throw new MarvelException(NOT_FOUND);
         }
-        if ($user->hasPermissionTo(Permission::SUPER_ADMIN)) {
+        if (!$order->customer_id) {
+            return $order;
+        }
+        if ($user && $user->hasPermissionTo(Permission::SUPER_ADMIN)) {
             return $order;
         } elseif (isset($order->shop_id)) {
-            if ($this->repository->hasPermission($user, $order->shop_id)) {
-                return $order;
-            } elseif ($user->id == $order->customer_id) {
+            if ($user && ($this->repository->hasPermission($user, $order->shop_id) || $user->id == $order->customer_id)) {
                 return $order;
             }
-        } elseif ($user->id == $order->customer_id) {
+        } elseif ($user && $user->id == $order->customer_id) {
             return $order;
         } else {
             throw new MarvelException(NOT_AUTHORIZED);
@@ -103,10 +104,13 @@ class OrderController extends CoreController
     }
     public function findByTrackingNumber(Request $request, $tracking_number)
     {
-        $user = $request->user();
+        $user = $request->user() ?? null;
         try {
             $order = $this->repository->with(['products', 'status', 'children.shop', 'wallet_point'])->findOneByFieldOrFail('tracking_number', $tracking_number);
-            if ($user->id === $order->customer_id || $user->can('super_admin')) {
+            if ($order->customer_id === null) {
+                return $order;
+            }
+            if ($user && ($user->id === $order->customer_id || $user->can('super_admin'))) {
                 return $order;
             } else {
                 throw new MarvelException(NOT_AUTHORIZED);
@@ -126,8 +130,7 @@ class OrderController extends CoreController
     public function update(OrderUpdateRequest $request, $id)
     {
         $request->id = $id;
-        $order = $this->updateOrder($request);
-        return $order;
+        return $this->updateOrder($request);
     }
 
 

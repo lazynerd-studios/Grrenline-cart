@@ -51,6 +51,7 @@ type SettingsOptions {
     siteTitle: String
     siteSubtitle: String
     currency: String
+    useOtp: Boolean
     contactDetails: ContactDetails
     minimumOrderAmount: Float
     currencyToWalletRatio: Int
@@ -95,6 +96,7 @@ input SettingsOptionsInput {
     siteTitle: String
     siteSubtitle: String
     currency: String
+    useOtp: Boolean
     contactDetails: ContactDetailsInput
     minimumOrderAmount: Float
     currencyToWalletRatio: Int

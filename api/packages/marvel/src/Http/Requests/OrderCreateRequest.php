@@ -32,12 +32,13 @@ class OrderCreateRequest extends FormRequest
             'status'           => 'required|exists:Marvel\Database\Models\OrderStatus,id',
             'coupon_id'        => 'nullable|exists:Marvel\Database\Models\Coupon,id',
             'shop_id'          => 'nullable|exists:Marvel\Database\Models\Shop,id',
+            'customer_id'      => 'nullable|exists:Marvel\Database\Models\User,id',
             'amount'           => 'required|numeric',
             'paid_total'       => 'required|numeric',
             'total'            => 'required|numeric',
-            'delivery_time'    => 'nullable|string|required',
+            'delivery_time'    => 'nullable|string',
             'customer_contact' => 'string|required',
-            'payment_gateway'  => ['required', Rule::in([PaymentGatewayType::STRIPE, PaymentGatewayType::CASH_ON_DELIVERY])],
+            'payment_gateway'  => ['required', Rule::in(PaymentGatewayType::getValues())],
             'products'         => 'required|array',
             'card'             => 'array',
             'token'             => 'nullable|string',
@@ -50,7 +51,6 @@ class OrderCreateRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        // TODO: Need to check from the request if it's coming from GraphQL API or not.
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

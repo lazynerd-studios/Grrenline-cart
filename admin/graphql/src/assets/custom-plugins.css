@@ -62,6 +62,10 @@
   outline: 0;
   box-shadow: none;
 }
+.react-datepicker .react-datepicker__navigation > span::before {
+  display: none;
+}
+
 .react-datepicker .react-datepicker__navigation--previous {
   background-image: url("/arrow-previous.svg");
   left: 19px;
@@ -661,4 +665,66 @@ Overlay Scrollbar - os-theme-thin-dark
   > .os-scrollbar-track
   > .os-scrollbar-handle:before {
   transition: width 0.3s, margin-left 0.3s, background 0.2s;
+}
+
+/* Check Box */
+.pb-checkbox {
+  position: absolute;
+  opacity: 0;
+}
+
+.pb-checkbox + label {
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pb-checkbox + label:before {
+  content: "";
+  margin-right: 10px;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background-color: #ffffff;
+  border: 1px solid rgb(var(--color-gray-300));
+}
+
+.pb-checkbox:focus + label:before {
+  border-color: rgb(var(--color-accent));
+}
+
+.pb-checkbox:checked + label:before {
+  background-color: rgb(var(--color-accent));
+  border-color: rgb(var(--color-accent));
+}
+
+.pb-checkbox:disabled + label {
+  color: rgb(var(--text-base));
+  cursor: auto;
+}
+
+.pb-checkbox:disabled + label:before {
+  box-shadow: none;
+  background: rgb(var(--color-gray-300));
+  border-color: rgb(var(--color-gray-400));
+  cursor: not-allowed;
+}
+
+.pb-checkbox:checked + label:after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  /* top: 9px; */
+  top: 50%;
+  margin-top: -1px;
+  background: #ffffff;
+  width: 2px;
+  height: 2px;
+  box-shadow: 2px 0 0 #ffffff, 4px 0 0 #ffffff, 4px -2px 0 #ffffff,
+    4px -4px 0 #ffffff, 4px -6px 0 #ffffff, 4px -8px 0 #ffffff;
+  transform: rotate(45deg);
 }

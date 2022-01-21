@@ -83,10 +83,23 @@ const UsersList = ({ customers, onPagination, refetch }: IProps) => {
       align: alignLeft,
     },
     {
+      title: t("table:table-item-permissions"),
+      dataIndex: "permissions",
+      key: "permissions",
+      align: "center",
+      render: (permissions: any, record: any) => {
+        return (
+          <div>
+            {permissions?.map(({ name }: { name: string }) => name).join(", ")}
+          </div>
+        );
+      },
+    },
+    {
       title: t("table:table-item-available_wallet_points"),
       dataIndex: ["wallet", "available_points"],
       key: "available_wallet_points",
-      align: alignLeft,
+      align: "center",
     },
     {
       title: (
@@ -122,6 +135,7 @@ const UsersList = ({ customers, onPagination, refetch }: IProps) => {
                 userStatus={true}
                 isUserActive={is_active}
                 showAddWalletPoints={true}
+                showMakeAdminButton={true}
               />
             )}
           </>

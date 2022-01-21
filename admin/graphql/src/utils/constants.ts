@@ -5,3 +5,5 @@ export const STAFF = "staff";
 export const TOKEN = "token";
 export const PERMISSIONS = "permissions";
 export const AUTH_CRED = "AUTH_CRED";
+export const CART_KEY = "pick-cart";
+export const CHECKOUT = "pickbazar-checkout";

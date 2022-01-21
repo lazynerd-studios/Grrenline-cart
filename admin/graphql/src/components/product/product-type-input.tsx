@@ -4,12 +4,7 @@ import { useFormContext } from "react-hook-form";
 import Card from "@components/common/card";
 import ValidationError from "@components/ui/form-validation-error";
 import { useTranslation } from "next-i18next";
-import { ProductType } from "__generated__/__types__";
-
-const productType = [
-  { name: "Simple Product", value: ProductType.Simple },
-  { name: "Variable Product", value: ProductType.Variable },
-];
+import { productTypeOptions } from "./form-utils";
 
 const ProductTypeInput = () => {
   const {
@@ -23,13 +18,13 @@ const ProductTypeInput = () => {
       <div className="mb-5">
         <Label>{t("form:form-title-product-type")}</Label>
         <SelectInput
-          name="productTypeValue"
+          name="product_type"
           control={control}
           getOptionLabel={(option: any) => option.name}
           getOptionValue={(option: any) => option.value}
-          options={productType}
+          options={productTypeOptions}
         />
-        <ValidationError message={t(errors.productTypeValue?.message)} />
+        <ValidationError message={t(errors.product_type?.message)} />
       </div>
     </Card>
   );

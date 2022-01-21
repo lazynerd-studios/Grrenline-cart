@@ -12,6 +12,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ROUTES } from "@utils/routes";
 import { SortOrder } from "@ts-types/generated";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function ShippingsPage() {
   const { t } = useTranslation();
@@ -63,6 +64,11 @@ export default function ShippingsPage() {
     </>
   );
 }
+
+ShippingsPage.authenticate = {
+  permissions: adminOnly,
+};
+
 ShippingsPage.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

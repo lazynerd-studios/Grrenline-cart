@@ -123,4 +123,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Provider::class, 'user_id', 'id');
     }
+
+    /**
+     * @return HasMany
+     */
+    public function ordered_files(): HasMany
+    {
+        return $this->hasMany(OrderedFiles::class, 'customer_id');
+    }
 }

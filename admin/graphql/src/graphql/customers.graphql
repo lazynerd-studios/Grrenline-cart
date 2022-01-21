@@ -11,6 +11,10 @@ query Customers(
       id
       name
       email
+      permissions {
+        id
+        name
+      }
       is_active
       profile {
         id
@@ -44,11 +48,36 @@ query Customer($id: ID!) {
       id
       avatar {
         id
-        original
         thumbnail
+        original
       }
       bio
+      socials {
+        type
+        link
+      }
+      contact
     }
+    address {
+      id
+      title
+      default
+      type
+      address {
+        country
+        city
+        state
+        zip
+        street_address
+      }
+    }
+    wallet {
+      id
+      total_points
+      points_used
+      available_points
+    }
+    is_active
     created_at
   }
 }
@@ -58,6 +87,10 @@ mutation UpdateCustomer($input: UpdateUserInput!) {
     id
     name
     email
+    permissions {
+      id
+      name
+    }
     profile {
       avatar {
         id

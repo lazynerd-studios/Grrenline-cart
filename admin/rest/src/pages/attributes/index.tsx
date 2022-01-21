@@ -8,6 +8,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { SortOrder } from "@ts-types/generated";
 import { useState } from "react";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function AttributePage() {
   const { t } = useTranslation();
@@ -40,10 +41,14 @@ export default function AttributePage() {
   );
 }
 
+AttributePage.authenticate = {
+  permissions: adminOnly,
+};
+
+AttributePage.Layout = Layout;
+
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
     ...(await serverSideTranslations(locale, ["table", "common", "form"])),
   },
 });
-
-AttributePage.Layout = Layout;

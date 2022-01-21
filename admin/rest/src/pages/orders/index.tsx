@@ -9,6 +9,7 @@ import { useOrdersQuery } from "@data/order/use-orders.query";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { SortOrder } from "@ts-types/generated";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function Orders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,6 +59,10 @@ export default function Orders() {
     </>
   );
 }
+
+Orders.authenticate = {
+  permissions: adminOnly,
+};
 Orders.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

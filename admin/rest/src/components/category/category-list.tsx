@@ -81,6 +81,7 @@ const CategoryList = ({
       title: t("table:table-item-details"),
       dataIndex: "details",
       key: "details",
+      ellipsis: true,
       align: alignLeft,
       width: 200,
     },

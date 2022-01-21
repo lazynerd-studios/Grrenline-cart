@@ -8,6 +8,7 @@ query Settings {
       minimumOrderAmount
       currencyToWalletRatio
       signupPoints
+      useOtp
       deliveryTime {
         title
         description

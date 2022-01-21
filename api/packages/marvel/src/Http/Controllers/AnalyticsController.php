@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Marvel\Database\Repositories\AddressRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Marvel\Database\Models\Product;
 use Marvel\Database\Models\Shop;
+use Marvel\Database\Models\Type;
 use Marvel\Enums\Permission;
 use Marvel\Exceptions\MarvelException;
 use Spatie\Permission\Models\Permission as ModelsPermission;
@@ -113,18 +115,5 @@ class AnalyticsController extends CoreController
             ];
         }
         throw new MarvelException(NOT_AUTHORIZED);
-    }
-
-    public function popularProducts(Request $request)
-    {
-        $limit = $request->limit ? $request->limit : 10;
-        $products_query = Product::withCount('orders')->with(['type', 'shop'])->orderBy('orders_count', 'desc')->limit($limit);
-        if (isset($request->shop_id)) {
-            $products = $products_query->where('shop_id', "=", $request->shop_id)->get();
-        } else {
-            $products = $products_query->get();
-        }
-
-        return $products;
     }
 }

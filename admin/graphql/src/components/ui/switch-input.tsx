@@ -5,7 +5,7 @@ import { useTranslation } from "next-i18next";
 
 interface Props {
   control: Control<any>;
-  errors: FieldErrors;
+  errors?: FieldErrors;
   label?: string;
   name: string;
   [key: string]: unknown;
@@ -32,7 +32,7 @@ const SwitchInput = ({ control, label, name, errors, ...rest }: Props) => {
             <span
               className={`${
                 value ? "translate-x-6" : "translate-x-1"
-              } inline-block w-4 h-4 transform bg-light rounded-full`}
+              } inline-block w-4 h-4 transition-transform transform bg-light rounded-full`}
             />
           </Switch>
         )}

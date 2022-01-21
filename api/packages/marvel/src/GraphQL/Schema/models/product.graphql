@@ -16,14 +16,21 @@ extend type Query {
             )
         text: String @where(operator: "like", key: "name")
         status: String @eq
+        max_price: PriceRange @whereBetween
+        min_price: PriceRange @whereBetween
+        price: PriceRange @whereBetween
+        status: String @eq
         shop_id: ID @eq
         hasType: _ @whereHasConditions(columns: ["slug"])
+        hasAuthor: _ @whereHasConditions(columns: ["slug"])
+        hasManufacturer: _ @whereHasConditions(columns: ["slug"])
+        hasType: _ @whereHasConditions(columns: ["slug"])
         hasCategories: _ @whereHasConditions(columns: ["slug"])
+        hasTags: _ @whereHasConditions(columns: ["slug"])
     ): [Product!]!
         @paginate(defaultCount: 15)
         @orderBy(column: "created_at", direction: "DESC")
     product(id: ID @eq, slug: String @eq): Product @find
-    # search(text: String! @search): [Product!]! @paginate(defaultCount: 15)
 }
 
 enum ProductStatus {
@@ -31,6 +38,10 @@ enum ProductStatus {
     DRAFT @enum(value: "draft")
 }
 
+input PriceRange {
+    from: Float!
+    to: Float!
+}
 type OrderProductPivot {
     variation_option_id: ID
     order_quantity: Int
@@ -41,12 +52,30 @@ type OrderProductPivot {
 type Variation {
     id: ID
     title: String
+    product: Product @belongsTo
     price: Float
+    image: Attachment
+    digital_file: DigitalFile
+        @field(
+            resolver: "Marvel\\GraphQL\\Queries\\ProductQuery@fetchDigitalFilesForVariation"
+        )
     sku: String
     is_disable: Boolean
+    is_digital: Boolean
     sale_price: Float
     quantity: Int
     options: [VariationOption]
+}
+
+union Fileable = Product | Variation
+
+type DigitalFile {
+    id: ID!
+    attachment_id: ID!
+    fileable: Fileable @morphTo
+    url: String!
+    created_at: DateTime
+    updated_at: DateTime
 }
 
 type VariationOption {
@@ -62,12 +91,20 @@ type Product {
     product_type: ProductType!
     categories: [Category] @belongsToMany
     tags: [Tag] @belongsToMany
+    digital_file: DigitalFile
+        @field(
+            resolver: "Marvel\\GraphQL\\Queries\\ProductQuery@fetchDigitalFilesForProduct"
+        )
     variations: [AttributeValue] @belongsToMany
     variation_options: [Variation] @hasMany
     pivot: OrderProductPivot
     orders: [Order] @belongsToMany
     shop: Shop @belongsTo
+    author: Author @belongsTo
+    manufacturer: Manufacturer @belongsTo
     shop_id: ID
+    author_id: ID
+    manufacturer_id: ID
     related_products(limit: Int): [Product]
         @field(
             resolver: "Marvel\\GraphQL\\Queries\\ProductQuery@relatedProducts"
@@ -75,6 +112,10 @@ type Product {
     description: String
     in_stock: Boolean
     is_taxable: Boolean
+    is_digital: Boolean
+    is_external: Boolean
+    external_product_url: String
+    external_product_button_text: String
     sale_price: Float
     max_price: Float
     min_price: Float
@@ -98,10 +139,19 @@ input UpsertVariationsHasMany {
     delete: [ID!]
 }
 
+input DigitalFileInput {
+    id: ID
+    attachment_id: ID!
+    url: String!
+}
+
 input VariationInput {
     id: ID
     title: String!
+    image: AttachmentInput
     sku: String!
+    digital_file: DigitalFileInput
+    is_digital: Boolean
     is_disable: Boolean
     sale_price: Float
     price: Float!
@@ -126,6 +176,8 @@ input CreateProductInput {
     name: String! @rules(apply: ["required", "max:255"])
     type_id: ID! @rules(apply: ["required", "exists:types,id"])
     shop_id: ID! @rules(apply: ["exists:shops,id"])
+    author_id: ID @rules(apply: ["exists:authors,id"])
+    manufacturer_id: ID @rules(apply: ["exists:manufacturers,id"])
     price: Float
     max_price: Float
     min_price: Float
@@ -136,10 +188,15 @@ input CreateProductInput {
     description: String @rules(apply: ["max:1000"])
     categories: [ID!]
     tags: [ID!]
+    digital_file: DigitalFileInput
     variations: [AttributeProductPivot]
     variation_options: UpsertVariationsHasMany
     in_stock: Boolean
     is_taxable: Boolean
+    is_digital: Boolean
+    is_external: Boolean
+    external_product_url: String
+    external_product_button_text: String
     sale_price: Float
     sku: String
     gallery: [AttachmentInput]
@@ -156,6 +213,8 @@ input UpdateProductInput {
     name: String!
     type_id: ID! @rules(apply: ["required", "exists:types,id"])
     shop_id: ID! @rules(apply: ["exists:shops,id"])
+    author_id: ID @rules(apply: ["exists:authors,id"])
+    manufacturer_id: ID @rules(apply: ["exists:manufacturers,id"])
     price: Float
     max_price: Float
     min_price: Float
@@ -165,10 +224,15 @@ input UpdateProductInput {
     description: String @rules(apply: ["max:1000"])
     categories: [ID!]
     tags: [ID!]
+    digital_file: DigitalFileInput
     variations: [AttributeProductPivot]
     variation_options: UpsertVariationsHasMany
     in_stock: Boolean
     is_taxable: Boolean
+    is_digital: Boolean
+    is_external: Boolean
+    external_product_url: String
+    external_product_button_text: String
     sale_price: Float
     sku: String
     gallery: [AttachmentInput]

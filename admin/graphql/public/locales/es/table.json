@@ -52,5 +52,8 @@
   "table-shipping-type": "Tipo de envío",
   "table-item-available_wallet_points": "Puntos de billetera disponibles",
   "table-item-order-id": "Solicitar ID",
-  "table-item-customer-email": "Correo electrónico del cliente"
+  "table-item-customer-email": "Correo electrónico del cliente",
+  "table-item-is-approved": "Esta aprobado",
+  "table-item-approval-action": "Acción de aprobación",
+  "table-item-permissions": "permisos"
 }

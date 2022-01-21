@@ -16,6 +16,6 @@ class AnalyticsQuery
 
     public function popularProducts($rootValue, array $args, GraphQLContext $context)
     {
-        return Shop::call('Marvel\Http\Controllers\AnalyticsController@popularProducts', $args);
+        return Shop::call('Marvel\Http\Controllers\ProductController@popularProducts', $args);
     }
 }

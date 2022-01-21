@@ -50,5 +50,8 @@
   "table-shipping-type": "Shipping Type",
   "table-item-available_wallet_points": "Available wallet points",
   "table-item-order-id": "Order ID",
-  "table-item-customer-email": "Customer Email"
+  "table-item-customer-email": "Customer Email",
+  "table-item-is-approved": "Is Approved",
+  "table-item-approval-action": "Approval Action",
+  "table-item-permissions": "Permissions"
 }

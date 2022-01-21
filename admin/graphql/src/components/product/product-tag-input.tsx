@@ -35,6 +35,7 @@ const ProductTagInput = ({ control, setValue }: Props) => {
           operator: SqlOperator.Eq,
           value: type?.slug,
         },
+        first: 100,
       }),
     },
   });

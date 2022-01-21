@@ -1,5 +1,4 @@
 import React, { InputHTMLAttributes } from "react";
-import styles from "./checkbox.module.css";
 
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
@@ -18,7 +17,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, Props>(
             name={name}
             type="checkbox"
             ref={ref}
-            className={styles.checkbox}
+            className="pb-checkbox"
             {...rest}
           />
 

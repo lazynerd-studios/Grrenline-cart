@@ -10,11 +10,10 @@ import ShopLayout from "@components/layouts/shop";
 import { useRouter } from "next/router";
 import { adminOwnerAndStaffOnly } from "@utils/auth-utils";
 import { useShopQuery } from "@graphql/shops.graphql";
-import SortFormGql from "@components/common/sort-form-gql";
 import { useModalAction } from "@components/ui/modal/modal.context";
 import { MoreIcon } from "@components/icons/more-icon";
 import Button from "@components/ui/button";
-import { QueryAttributesOrderByColumn } from "__generated__/__types__";
+
 export default function AttributePage() {
   const {
     query: { shop },

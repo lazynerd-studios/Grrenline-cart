@@ -3,17 +3,26 @@ import Description from "@components/ui/description";
 import Card from "@components/common/card";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "next-i18next";
+import Checkbox from "@components/ui/checkbox/checkbox";
+import FileInput from "@components/ui/file-input";
+import Label from "@components/ui/label";
 
 type IProps = {
   initialValues: any;
 };
 
-export default function ProductSimpleForm({ initialValues }: IProps) {
+export default function SimpleProductForm({ initialValues }: IProps) {
+  const { t } = useTranslation();
   const {
     register,
     formState: { errors },
+    control,
+    watch,
   } = useFormContext();
-  const { t } = useTranslation();
+
+  const is_digital = watch("is_digital");
+  const is_external = watch("is_external");
+
   return (
     <div className="flex flex-wrap my-5 sm:my-8">
       <Description
@@ -82,6 +91,53 @@ export default function ProductSimpleForm({ initialValues }: IProps) {
           variant="outline"
           className="mb-5"
         />
+        <Checkbox
+          {...register("is_digital")}
+          id="is_digital"
+          label={t("form:input-label-is-digital")}
+          disabled={Boolean(is_external)}
+          className="mb-5"
+        />
+
+        <Checkbox
+          {...register("is_external")}
+          id="is_external"
+          label={t("form:input-label-is-external")}
+          disabled={Boolean(is_digital)}
+          className="mb-5"
+        />
+
+        {is_digital && (
+          <>
+            <Label>{t("form:input-label-digital-file")}</Label>
+            <FileInput
+              name="digital_file_input"
+              control={control}
+              multiple={false}
+              acceptFile={true}
+              helperText={t("form:text-upload-digital-file")}
+            />
+            <input type="hidden" {...register(`digital_file`)} />
+          </>
+        )}
+        {is_external && (
+          <div>
+            <Input
+              label={t("form:input-label-external-product-url")}
+              {...register("external_product_url")}
+              error={t(errors.external_product_url?.message!)}
+              variant="outline"
+              className="mb-5"
+            />
+            <Input
+              label={t("form:input-label-external-product-button-text")}
+              {...register("external_product_button_text")}
+              error={t(errors.external_product_button_text?.message!)}
+              variant="outline"
+              className="mb-5"
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

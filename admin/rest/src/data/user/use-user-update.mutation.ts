@@ -22,6 +22,7 @@ export const useUpdateUserMutation = () => {
       // Always refetch after error or success:
       onSettled: () => {
         queryClient.invalidateQueries(API_ENDPOINTS.ME);
+        queryClient.invalidateQueries(API_ENDPOINTS.USERS);
       },
     }
   );

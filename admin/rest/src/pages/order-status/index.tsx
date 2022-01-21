@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { SortOrder } from "@ts-types/generated";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function OrderStatusPage() {
   const { t } = useTranslation();
@@ -71,6 +72,10 @@ export default function OrderStatusPage() {
     </>
   );
 }
+
+OrderStatusPage.authenticate = {
+  permissions: adminOnly,
+};
 OrderStatusPage.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

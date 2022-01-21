@@ -84,6 +84,18 @@ class ImportDemoData extends Command
         $categories_sql = file_get_contents($categories_path);
         DB::statement($categories_sql);
 
+        $tags_path = public_path('sql/tags.sql');
+        $tags_sql = file_get_contents($tags_path);
+        DB::statement($tags_sql);
+
+        $authors_path = public_path('sql/authors.sql');
+        $authors_sql = file_get_contents($authors_path);
+        DB::statement($authors_sql);
+
+        $manufacturers_path = public_path('sql/manufacturers.sql');
+        $manufacturers_sql = file_get_contents($manufacturers_path);
+        DB::statement($manufacturers_sql);
+
         $products_path = public_path('sql/products.sql');
         $products_sql = file_get_contents($products_path);
         DB::statement($products_sql);
@@ -100,6 +112,10 @@ class ImportDemoData extends Command
         $coupons_sql = file_get_contents($coupons_path);
         DB::statement($coupons_sql);
 
+        $digital_files_path = public_path('sql/digital_files.sql');
+        $digital_files_sql = file_get_contents($digital_files_path);
+        DB::statement($digital_files_sql);
+
         $orders_status_path = public_path('sql/order_status.sql');
         $orders_status_sql = file_get_contents($orders_status_path);
         DB::statement($orders_status_sql);
@@ -107,6 +123,10 @@ class ImportDemoData extends Command
         $category_product_path = public_path('sql/category_product.sql');
         $category_product_sql = file_get_contents($category_product_path);
         DB::statement($category_product_sql);
+
+        $product_tag_path = public_path('sql/product_tag.sql');
+        $product_tag_sql = file_get_contents($product_tag_path);
+        DB::statement($product_tag_sql);
 
         $settings_path = public_path('sql/settings.sql');
         $settings_sql = file_get_contents($settings_path);

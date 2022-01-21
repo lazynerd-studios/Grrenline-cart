@@ -1,6 +1,6 @@
 import Pagination from "@components/ui/pagination";
 import Image from "next/image";
-import { Table } from "@components/ui/table";
+import { Table, AlignType } from "@components/ui/table";
 import ActionButtons from "@components/common/action-buttons";
 import { siteSettings } from "@settings/site.settings";
 import usePrice from "@utils/use-price";
@@ -63,7 +63,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       title: t("table:table-item-image"),
       dataIndex: "image",
       key: "image",
-      align: alignLeft,
+      align: alignLeft as AlignType,
       width: 74,
       render: (image: any, { name }: { name: string }) => (
         <Image
@@ -90,7 +90,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       className: "cursor-pointer",
       dataIndex: "name",
       key: "name",
-      align: alignLeft,
+      align: alignLeft as AlignType,
       width: 200,
       ellipsis: true,
       onHeaderCell: () => onHeaderClick(QueryProductsOrderByColumn.Name),
@@ -100,7 +100,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       dataIndex: "type",
       key: "type",
       width: 120,
-      align: "center",
+      align: "center" as AlignType,
       render: (type: any) => (
         <span className="whitespace-nowrap truncate">{type?.name}</span>
       ),
@@ -110,7 +110,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       dataIndex: "shop",
       key: "shop",
       width: 120,
-      align: "center",
+      align: "center" as AlignType,
       ellipsis: true,
       render: (shop: Shop) => (
         <span className="whitespace-nowrap truncate">{shop?.name}</span>
@@ -130,7 +130,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       className: "cursor-pointer",
       dataIndex: "price",
       key: "price",
-      align: alignRight,
+      align: alignRight as AlignType,
       width: 180,
       onHeaderCell: () => onHeaderClick(QueryProductsOrderByColumn.Price),
       render: (value: number, record: Product) => {
@@ -173,7 +173,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       className: "cursor-pointer",
       dataIndex: "quantity",
       key: "quantity",
-      align: "center",
+      align: "center" as AlignType,
       width: 100,
       onHeaderCell: () => onHeaderClick(QueryProductsOrderByColumn.Quantity),
     },
@@ -191,7 +191,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       className: "cursor-pointer",
       dataIndex: "status",
       key: "status",
-      align: "center",
+      align: "center" as AlignType,
       width: 100,
       onHeaderCell: () => onHeaderClick(QueryProductsOrderByColumn.Status),
       render: (status: string) => (
@@ -205,7 +205,7 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
       title: t("table:table-item-actions"),
       dataIndex: "id",
       key: "actions",
-      align: "center",
+      align: "center" as AlignType,
       width: 80,
       render: (id: string) => (
         <ActionButtons
@@ -218,14 +218,13 @@ const ProductList = ({ products, onPagination, refetch }: IProps) => {
   ];
 
   if (router?.query?.shop) {
-    columns = columns?.filter((column) => column?.key !== "shop");
+    columns = columns?.filter((col) => col?.key !== "shop");
   }
 
   return (
     <>
       <div className="rounded overflow-hidden shadow mb-6">
         <Table
-          // @ts-ignore
           columns={columns}
           emptyText={t("table:empty-table-data")}
           data={data}

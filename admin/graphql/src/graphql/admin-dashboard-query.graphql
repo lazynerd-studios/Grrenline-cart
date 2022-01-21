@@ -16,6 +16,7 @@ query AdminDashboard {
     slug
     name
     description
+    product_type
     shop {
       name
     }
@@ -29,6 +30,8 @@ query AdminDashboard {
       name
     }
     price
+    max_price
+    min_price
     quantity
     unit
     status

@@ -42,4 +42,8 @@ export const API_ENDPOINTS = {
   IMPORT_PRODUCTS: "import-products/",
   IMPORT_ATTRIBUTES: "import-attributes/",
   IMPORT_VARIATION_OPTIONS: "import-variation-options/",
+  MAKE_ADMIN: "users/make-admin",
+  AUTHORS: "authors",
+  MANUFACTURERS: "manufacturers",
+  CHECKOUT: "orders/checkout/verify",
 };

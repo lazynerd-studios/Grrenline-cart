@@ -20,8 +20,8 @@ class CheckoutVerifyRequest extends FormRequest
         return [
             'amount'           => 'required|numeric',
             'products'         => 'required|array',
-            'billing_address'  => 'required|array',
-            'shipping_address' => 'required|array',
+            'billing_address'  => 'array',
+            'shipping_address' => 'array',
         ];
     }
 

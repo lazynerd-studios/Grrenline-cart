@@ -9,37 +9,28 @@ import {
 import { formatAddress } from "@utils/format-address";
 import usePrice from "@utils/use-price";
 import dayjs from "dayjs";
-import { Order, UserAddress } from "__generated__/__types__";
+import { Order, SettingsOptions, UserAddress } from "__generated__/__types__";
 
-export default function InvoicePdf({ order }: { order: Order }) {
-  const { price: subtotal } = usePrice(
-    order && {
-      amount: order?.amount!,
-    }
-  );
-  const { price: total } = usePrice(
-    order && {
-      amount: order?.paid_total!,
-    }
-  );
-  const { price: discount } = usePrice(
-    order && {
-      amount: order?.discount!,
-    }
-  );
-  const { price: delivery_fee } = usePrice(
-    order && {
-      amount: order?.delivery_fee!,
-    }
-  );
-  const { price: sales_tax } = usePrice(
-    order && {
-      amount: order?.sales_tax!,
-    }
-  );
+export default function InvoicePdf({
+  order,
+  subtotal,
+  total,
+  discount,
+  delivery_fee,
+  sales_tax,
+  settings,
+}: {
+  order: Order;
+  settings: SettingsOptions;
+  subtotal: string;
+  total: string;
+  discount: string;
+  delivery_fee: string;
+  sales_tax: string;
+}) {
   return (
     <Document>
-      <Page size="A4">
+      <Page size="A4" style={{ paddingVertical: 40 }} wrap>
         <View style={styles.container}>
           {/* Address */}
           <View style={styles.addressWrapper}>
@@ -72,26 +63,46 @@ export default function InvoicePdf({ order }: { order: Order }) {
                   { color: "#374151", fontSize: 12 },
                 ]}
               >
-                Pickbazar
+                {settings?.siteTitle}
               </Text>
-              <Text style={styles.addressTextRight}>pickbazar@dummy.com</Text>
-              <Text style={styles.addressTextRight}>+123456789</Text>
               <Text style={styles.addressTextRight}>
-                21 Jump Street, CA, California
+                {settings?.contactDetails?.website}
+              </Text>
+              <Text style={styles.addressTextRight}>
+                {settings?.contactDetails?.contact}
+              </Text>
+              <Text style={styles.addressTextRight}>
+                {settings?.contactDetails?.location?.formattedAddress}
               </Text>
             </View>
           </View>
 
           {/* Table */}
           <View style={styles.orderTable}>
-            {order?.products?.map((product, index) => {
-              const { price } = usePrice({
-                // @ts-ignore
-                amount: parseFloat(product.pivot.subtotal),
-              });
-              return (
-                <View style={styles.tbody} key={index}>
-                  <View style={styles.tr}>
+            <View style={styles.tbody}>
+              <View style={styles.tr}>
+                <Text style={[styles.td, { width: 50, textAlign: "center" }]}>
+                  #
+                </Text>
+                <Text style={[styles.td, { flex: 1 }]}>name</Text>
+                <Text style={[styles.td, { width: 75, textAlign: "center" }]}>
+                  Quantity
+                </Text>
+                <Text style={[styles.td, { flex: 1, textAlign: "center" }]}>
+                  Variations
+                </Text>
+                <Text style={[styles.td, { width: 100, textAlign: "right" }]}>
+                  Total
+                </Text>
+              </View>
+
+              {order?.products?.map((product, index) => {
+                const { price } = usePrice({
+                  // @ts-ignore
+                  amount: parseFloat(product.pivot.subtotal),
+                });
+                return (
+                  <View style={styles.tr} key={index} wrap={false}>
                     <Text
                       style={[styles.td, { width: 50, textAlign: "center" }]}
                     >
@@ -101,44 +112,59 @@ export default function InvoicePdf({ order }: { order: Order }) {
                       {product?.name}
                     </Text>
                     <Text
+                      style={[styles.td, { width: 75, textAlign: "center" }]}
+                    >
+                      {product?.pivot?.order_quantity}
+                    </Text>
+                    <Text style={[styles.td, { flex: 1, textAlign: "center" }]}>
+                      {
+                        product?.variation_options?.find(
+                          (item) =>
+                            item?.id === product?.pivot?.variation_option_id
+                        )?.title
+                      }
+                    </Text>
+                    <Text
                       style={[styles.td, { width: 100, textAlign: "right" }]}
                     >
                       {price}
                     </Text>
                   </View>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
 
-          {/* Border */}
-          <View style={styles.singleBorder} />
+          <View style={{ width: "100%" }} wrap={false}>
+            {/* Border */}
+            <View style={styles.singleBorder} />
 
-          {/* Total */}
-          <View style={styles.totalCountWrapper}>
-            <View style={styles.totalCountRow}>
-              <Text style={styles.totalCountCell}>Sub Total</Text>
-              <Text style={styles.totalCountCell}>{subtotal}</Text>
-            </View>
-            <View style={styles.totalCountRow}>
-              <Text style={styles.totalCountCell}>Discount</Text>
-              <Text style={styles.totalCountCell}>{discount}</Text>
-            </View>
-            <View style={styles.totalCountRow}>
-              <Text style={styles.totalCountCell}>Tax</Text>
-              <Text style={styles.totalCountCell}>{sales_tax}</Text>
-            </View>
-            <View style={styles.totalCountRow}>
-              <Text style={styles.totalCountCell}>Delivery Fee</Text>
-              <Text style={styles.totalCountCell}>{delivery_fee}</Text>
-            </View>
-            <View style={styles.totalCountRow}>
-              <Text style={[styles.totalCountCell, { fontSize: 12 }]}>
-                Total
-              </Text>
-              <Text style={[styles.totalCountCell, { fontSize: 12 }]}>
-                {total}
-              </Text>
+            {/* Total */}
+            <View style={styles.totalCountWrapper}>
+              <View style={styles.totalCountRow}>
+                <Text style={styles.totalCountCell}>Sub Total</Text>
+                <Text style={styles.totalCountCell}>{subtotal}</Text>
+              </View>
+              <View style={styles.totalCountRow}>
+                <Text style={styles.totalCountCell}>Discount</Text>
+                <Text style={styles.totalCountCell}>{discount}</Text>
+              </View>
+              <View style={styles.totalCountRow}>
+                <Text style={styles.totalCountCell}>Tax</Text>
+                <Text style={styles.totalCountCell}>{sales_tax}</Text>
+              </View>
+              <View style={styles.totalCountRow}>
+                <Text style={styles.totalCountCell}>Delivery Fee</Text>
+                <Text style={styles.totalCountCell}>{delivery_fee}</Text>
+              </View>
+              <View style={styles.totalCountRow}>
+                <Text style={[styles.totalCountCell, { fontSize: 12 }]}>
+                  Total
+                </Text>
+                <Text style={[styles.totalCountCell, { fontSize: 12 }]}>
+                  {total}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -161,7 +187,8 @@ const styles = StyleSheet.create({
   container: {
     maxWidth: 600,
     flex: 1,
-    margin: "50pt",
+    marginLeft: 50,
+    marginRight: 50,
   },
 
   addressWrapper: {

@@ -14,4 +14,14 @@ class ProductQuery
         $args['slug'] = $rootValue->slug;
         return Shop::call('Marvel\Http\Controllers\ProductController@relatedProducts', $args);
     }
+    public function fetchDigitalFilesForProduct($rootValue, array $args, GraphQLContext $context)
+    {
+        $args['parent_id'] = $rootValue->id;
+        return Shop::call('Marvel\Http\Controllers\ProductController@fetchDigitalFilesForProduct', $args);
+    }
+    public function fetchDigitalFilesForVariation($rootValue, array $args, GraphQLContext $context)
+    {
+        $args['parent_id'] = $rootValue->id;
+        return Shop::call('Marvel\Http\Controllers\ProductController@fetchDigitalFilesForVariation', $args);
+    }
 }

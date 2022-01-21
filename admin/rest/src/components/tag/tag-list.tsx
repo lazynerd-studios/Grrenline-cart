@@ -73,46 +73,6 @@ const TagList = ({ tags, onPagination, onSort, onOrder }: IProps) => {
       onHeaderCell: () => onHeaderClick("name"),
     },
     {
-      title: t("table:table-item-image"),
-      dataIndex: "image",
-      key: "image",
-      align: "center",
-
-      render: (image: any, { name }: { name: string }) => {
-        if (!image?.thumbnail) return null;
-
-        return (
-          <Image
-            src={image?.thumbnail ?? "/"}
-            alt={name}
-            layout="fixed"
-            width={40}
-            height={40}
-            className="rounded overflow-hidden"
-          />
-        );
-      },
-    },
-
-    {
-      title: t("table:table-item-icon"),
-      dataIndex: "icon",
-      key: "icon",
-      align: "center",
-      render: (icon: string) => {
-        if (!icon) return null;
-        return (
-          <span className="flex items-center justify-center">
-            {getIcon({
-              iconList: categoriesIcon,
-              iconName: icon,
-              className: "w-5 h-5 max-h-full max-w-full",
-            })}
-          </span>
-        );
-      },
-    },
-    {
       title: t("table:table-item-slug"),
       dataIndex: "slug",
       key: "slug",
@@ -124,7 +84,6 @@ const TagList = ({ tags, onPagination, onSort, onOrder }: IProps) => {
       dataIndex: "type",
       key: "type",
       align: alignLeft,
-      width: 120,
       render: (type: any) => (
         <div
           className="whitespace-nowrap truncate overflow-hidden"

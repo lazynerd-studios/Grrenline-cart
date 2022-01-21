@@ -4,7 +4,9 @@ import { Product as TProduct } from "@ts-types/generated";
 import { API_ENDPOINTS } from "@utils/api/endpoints";
 
 export const fetchProduct = async (slug: string) => {
-  const { data } = await Product.find(`${API_ENDPOINTS.PRODUCTS}/${slug}`);
+  const { data } = await Product.find(
+    `${API_ENDPOINTS.PRODUCTS}/${slug}?with=digital_file;variation_options.digital_file`
+  );
   return data;
 };
 

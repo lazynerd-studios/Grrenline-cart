@@ -75,4 +75,16 @@ class AuthMutator
     {
         return Shop::call('Marvel\Http\Controllers\UserController@addPoints', $args);
     }
+    public function makeOrRevokeAdmin($rootValue, array $args, GraphQLContext $context)
+    {
+        return Shop::call('Marvel\Http\Controllers\UserController@makeOrRevokeAdmin', $args);
+    }
+    public function generateDownloadableUrl($rootValue, array $args, GraphQLContext $context)
+    {
+        return Shop::call('Marvel\Http\Controllers\UserController@generateDownloadableUrl', $args);
+    }
+    public function subscribeToNewsletter($rootValue, array $args, GraphQLContext $context)
+    {
+        return Shop::call('Marvel\Http\Controllers\UserController@subscribeToNewsletter', $args);
+    }
 }

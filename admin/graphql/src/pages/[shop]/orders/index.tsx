@@ -32,7 +32,7 @@ export default function Orders() {
       page: 1,
       orderBy: "created_at",
       sortedBy: "DESC",
-      shop_id: Number(shopId),
+      shop_id: shopId,
     },
     fetchPolicy: "network-only",
   });

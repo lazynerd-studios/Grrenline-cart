@@ -10,6 +10,7 @@ import { useCouponsQuery } from "@data/coupon/use-coupons.query";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { SortOrder } from "@ts-types/generated";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function Coupons() {
   const { t } = useTranslation();
@@ -68,6 +69,11 @@ export default function Coupons() {
     </>
   );
 }
+
+Coupons.authenticate = {
+  permissions: adminOnly,
+};
+
 Coupons.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

@@ -5,57 +5,34 @@ import Description from "@components/ui/description";
 import Card from "@components/common/card";
 import Label from "@components/ui/label";
 import Title from "@components/ui/title";
-
 import Checkbox from "@components/ui/checkbox/checkbox";
 import { useAttributesQuery } from "@graphql/attributes.graphql";
 import SelectInput from "@components/ui/select-input";
-import { cartesian } from "@utils/cartesian";
-import isEmpty from "lodash/isEmpty";
 import { useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useShopQuery } from "@graphql/shops.graphql";
 import { Product } from "__generated__/__types__";
+import FileInput from "@components/ui/file-input";
+import { filterAttributes, getCartesianProduct } from "./form-utils";
 
 type IProps = {
   initialValues?: Product | null;
 };
 
-function filteredAttributes(attributes: any, variations: any) {
-  let res = [];
-  res = attributes?.filter((el: any) => {
-    return !variations?.find((element: any) => {
-      return element?.attribute?.slug === el?.slug;
-    });
-  });
-  return res;
-}
-
-function getCartesianProduct(values: any) {
-  const formattedValues = values
-    ?.map((v: any) =>
-      v.value?.map((a: any) => ({ name: v.attribute.name, value: a.value }))
-    )
-    .filter((i: any) => i !== undefined);
-  if (isEmpty(formattedValues)) return [];
-  return cartesian(...formattedValues);
-}
-
-export default function ProductVariableForm({ initialValues }: IProps) {
-  const {
-    query: { shop },
-  } = useRouter();
+export default function VariableProductForm({ initialValues }: IProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data: shopData } = useShopQuery({
     variables: {
-      slug: shop as string,
+      slug: router.query.shop as string,
     },
   });
   const shopId = shopData?.shop?.id!;
   const { data, loading } = useAttributesQuery({
     skip: !Boolean(shopId),
     variables: {
-      shop_id: initialValues ? initialValues.shop_id : Number(shopId),
+      shop_id: initialValues ? initialValues.shop_id : shopId,
     },
   });
   const {
@@ -72,8 +49,7 @@ export default function ProductVariableForm({ initialValues }: IProps) {
     control,
     name: "variations",
   });
-  const variations = watch("variations");
-
+  const variations = watch("variations"); // watch all the variations and rerender the form
   const cartesianProduct = getCartesianProduct(getValues("variations"));
   const attributes = data?.attributes;
   return (
@@ -116,12 +92,12 @@ export default function ProductVariableForm({ initialValues }: IProps) {
                     <div className="mt-5">
                       <Label>{t("form:input-label-attribute-name")}*</Label>
                       <SelectInput
-                        name={`variations[${index}].attribute`}
+                        name={`variations.${index}.attribute`}
                         control={control}
                         defaultValue={field.attribute}
                         getOptionLabel={(option: any) => option.name}
                         getOptionValue={(option: any) => option.id}
-                        options={filteredAttributes(attributes, variations)!}
+                        options={filterAttributes(attributes, variations)!}
                         isLoading={loading}
                       />
                     </div>
@@ -130,14 +106,12 @@ export default function ProductVariableForm({ initialValues }: IProps) {
                       <Label>{t("form:input-label-attribute-value")}*</Label>
                       <SelectInput
                         isMulti
-                        name={`variations[${index}].value`}
+                        name={`variations.${index}.value`}
                         control={control}
                         defaultValue={field.value}
                         getOptionLabel={(option: any) => option.value}
                         getOptionValue={(option: any) => option.id}
-                        options={
-                          watch(`variations[${index}].attribute`)?.values
-                        }
+                        options={watch(`variations.${index}.attribute`)?.values}
                       />
                     </div>
                   </div>
@@ -149,10 +123,7 @@ export default function ProductVariableForm({ initialValues }: IProps) {
           <div className="px-5 md:px-8">
             <Button
               disabled={fields.length === attributes?.length}
-              onClick={(e: any) => {
-                e.preventDefault();
-                append({ attribute: "", value: [] });
-              }}
+              onClick={() => append({ attribute: "", value: [] })}
               type="button"
             >
               {t("form:button-label-add-option")}
@@ -233,6 +204,39 @@ export default function ProductVariableForm({ initialValues }: IProps) {
                           variant="outline"
                           className="mb-5"
                         />
+                      </div>
+
+                      <div>
+                        <Label>{t("form:input-label-image")}</Label>
+                        <FileInput
+                          name={`variation_options.${index}.image`}
+                          control={control}
+                          multiple={false}
+                        />
+                      </div>
+                      <div className="mb-5 mt-5">
+                        <Checkbox
+                          {...register(`variation_options.${index}.is_digital`)}
+                          label={t("form:input-label-is-digital")}
+                        />
+                        {watch(`variation_options.${index}.is_digital`) && (
+                          <div className="mt-5">
+                            <Label>{t("form:input-label-digital-file")}</Label>
+                            <FileInput
+                              name={`variation_options.${index}.digital_file_input`}
+                              control={control}
+                              multiple={false}
+                              acceptFile={true}
+                              helperText={t("form:text-upload-digital-file")}
+                            />
+                            <input
+                              type="hidden"
+                              {...register(
+                                `variation_options.${index}.digital_file`
+                              )}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="mb-5 mt-5">
                         <Checkbox

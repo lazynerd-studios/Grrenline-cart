@@ -31,8 +31,8 @@ function createApolloClient() {
   });
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors)
-      graphQLErrors.map(({ message, locations, path, extensions }) => {
-        if (extensions && extensions.category === "authorization") {
+      graphQLErrors.map(({ message, locations, path }) => {
+        if (message === "PICKBAZAR_ERROR.NOT_AUTHORIZED") {
           Cookies.remove("AUTH_CRED");
           Router.push(ROUTES.LOGIN);
         }

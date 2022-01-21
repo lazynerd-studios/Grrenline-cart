@@ -92,3 +92,36 @@ mutation ResetPassword($input: ResetPasswordInput!) {
     success
   }
 }
+
+mutation UpdateCustomer($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    id
+    name
+    email
+    profile {
+      id
+      avatar {
+        id
+        thumbnail
+        original
+      }
+      bio
+      socials {
+        type
+        link
+      }
+      contact
+    }
+    address {
+      title
+      default
+      address {
+        country
+        city
+        state
+        zip
+      }
+      type
+    }
+  }
+}

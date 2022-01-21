@@ -27,7 +27,7 @@ const fetchProducts = async ({ queryKey }: QueryParamsType) => {
     status,
     shop_id,
   });
-  const url = `${API_ENDPOINTS.PRODUCTS}?search=${searchString}&searchJoin=and&limit=${limit}&page=${page}&orderBy=${orderBy}&sortedBy=${sortedBy}`;
+  const url = `${API_ENDPOINTS.PRODUCTS}?with=shop;type&search=${searchString}&searchJoin=and&limit=${limit}&page=${page}&orderBy=${orderBy}&sortedBy=${sortedBy}`;
   const {
     data: { data, ...rest },
   } = await Product.all(url);

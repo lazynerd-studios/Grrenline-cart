@@ -45,6 +45,16 @@ const layoutTypes = [
     img: "/image/layout-classic.png",
   },
   {
+    label: "Compact",
+    value: "compact",
+    img: "/image/layout-compact.png",
+  },
+  {
+    label: "Minimal",
+    value: "minimal",
+    img: "/image/layout-minimal.png",
+  },
+  {
     label: "Modern",
     value: "modern",
     img: "/image/layout-modern.png",
@@ -53,11 +63,6 @@ const layoutTypes = [
     label: "Standard",
     value: "standard",
     img: "/image/layout-standard.png",
-  },
-  {
-    label: "Minimal",
-    value: "minimal",
-    img: "/image/layout-minimal.png",
   },
 ];
 const productCards = [
@@ -85,6 +90,11 @@ const productCards = [
     label: "Xenon",
     value: "xenon",
     img: "/image/card-xenon.png",
+  },
+  {
+    label: "Radon",
+    value: "radon",
+    img: "/image/card-radon.png",
   },
 ];
 

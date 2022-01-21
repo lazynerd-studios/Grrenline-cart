@@ -12,6 +12,7 @@ export default function Settings() {
   const { data, loading, error } = useSettingsQuery({
     fetchPolicy: "network-only",
   });
+  console.log("data:", data);
   if (loading) return <Loader text={t("common:text-loading")} />;
   if (error) return <ErrorMessage message={error.message} />;
   return (

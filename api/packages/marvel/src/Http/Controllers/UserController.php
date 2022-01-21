@@ -18,14 +18,20 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Marvel\Database\Models\Attachment;
+use Marvel\Database\Models\DownloadToken;
+use Marvel\Database\Models\OrderedFile;
 use Marvel\Database\Models\Profile;
 use Marvel\Http\Requests\ChangePasswordRequest;
 use Marvel\Mail\ContactAdmin;
 use Marvel\Otp\Gateways\OtpGateway;
 use Marvel\Database\Models\Permission as ModelsPermission;
 use Marvel\Database\Models\Wallet;
+use Marvel\Database\Repositories\DownloadRepository;
 use Marvel\Exceptions\MarvelException;
 use Marvel\Traits\Wallets;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Newsletter;
 
 class UserController extends CoreController
 {
@@ -45,7 +51,7 @@ class UserController extends CoreController
     public function index(Request $request)
     {
         $limit = $request->limit ?   $request->limit : 15;
-        return $this->repository->with(['profile', 'address'])->paginate($limit);
+        return $this->repository->with(['profile', 'address', 'permissions'])->paginate($limit);
     }
 
     /**
@@ -68,7 +74,7 @@ class UserController extends CoreController
     public function show($id)
     {
         try {
-            return $this->repository->with(['profile', 'address', 'shop', 'managed_shop'])->findOrFail($id);
+            return $this->repository->with(['profile', 'address', 'shops', 'managed_shop'])->findOrFail($id);
         } catch (Exception $e) {
             throw new MarvelException(NOT_FOUND);
         }
@@ -143,6 +149,10 @@ class UserController extends CoreController
 
     public function register(UserCreateRequest $request)
     {
+        $notAllowedPermissions = [Permission::SUPER_ADMIN];
+        if ((isset($request->permission->value) && in_array($request->permission->value, $notAllowedPermissions)) || (isset($request->permission) && in_array($request->permission, $notAllowedPermissions))) {
+            throw new MarvelException(NOT_AUTHORIZED);
+        }
         $permissions = [Permission::CUSTOMER];
         if (isset($request->permission)) {
             $permissions[] = isset($request->permission->value) ? $request->permission->value : $request->permission;
@@ -437,7 +447,7 @@ class UserController extends CoreController
                     "permissions" => $user->getPermissionNames()
                 ];
             }
-            return ['message' => 'OTP verification failed!', 'success' => false];
+            return ['message' => OTP_VERIFICATION_FAILED, 'success' => false];
         } catch (\Throwable $e) {
             return response()->json(['error' => INVALID_GATEWAY], 422);
         }
@@ -481,5 +491,38 @@ class UserController extends CoreController
         $wallet->total_points = $wallet->total_points + $points;
         $wallet->available_points = $wallet->available_points + $points;
         $wallet->save();
+    }
+
+    public function makeOrRevokeAdmin(Request $request)
+    {
+        $user = $request->user();
+        if ($this->repository->hasPermission($user)) {
+            $user_id = $request->user_id;
+            try {
+                $newUser = $this->repository->findOrFail($user_id);
+                if ($newUser->hasPermissionTo(Permission::SUPER_ADMIN)) {
+                    $newUser->revokePermissionTo(Permission::SUPER_ADMIN);
+                    return true;
+                }
+            } catch (Exception $e) {
+                throw new MarvelException(USER_NOT_FOUND);
+            }
+            $newUser->givePermissionTo(Permission::SUPER_ADMIN);
+
+            return true;
+        }
+
+        throw new MarvelException(NOT_AUTHORIZED);
+    }
+    public function subscribeToNewsletter(Request $request)
+    {
+        try {
+            $email = $request->email;
+            Newsletter::subscribe($email);
+            return true;
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            throw new MarvelException(SOMETHING_WENT_WRONG);
+        }
     }
 }

@@ -30,6 +30,8 @@ import {
   ShopSocialInput,
   Tax,
 } from "__generated__/__types__";
+import Checkbox from "@components/ui/checkbox/checkbox";
+import SwitchInput from "@components/ui/switch-input";
 
 type FormValues = {
   siteTitle: string;
@@ -37,6 +39,7 @@ type FormValues = {
   currency: any;
   minimumOrderAmount: number;
   signupPoints: number;
+  useOtp: boolean;
   currencyToWalletRatio: number;
   logo: any;
   taxClass: Tax;
@@ -295,6 +298,11 @@ export default function SettingsForm({
             variant="outline"
             className="mb-5"
           />
+
+          <div className="mb-5">
+            <Label>{t("form:input-label-enable-otp")}</Label>
+            <SwitchInput name="useOtp" control={control} />
+          </div>
 
           <div className="mb-5">
             <Label>{t("form:input-label-tax-class")}</Label>

@@ -1,22 +1,17 @@
 import * as yup from "yup";
 import { ProductType } from "__generated__/__types__";
+import { ProductTypeOption } from "./form-utils";
 export const productValidationSchema = yup.object().shape({
   name: yup.string().required("form:error-name-required"),
-  productTypeValue: yup.object().required("form:error-product-type-required"),
-  sku: yup.mixed().when("productTypeValue", {
-    is: (productType: {
-      name: string;
-      value: string;
-      [key: string]: unknown;
-    }) => productType?.value === ProductType.Simple,
+  product_type: yup.object().required("form:error-product-type-required"),
+  sku: yup.mixed().when("product_type", {
+    is: (productType: ProductTypeOption) =>
+      productType?.value === ProductType.Simple,
     then: yup.string().nullable().required("form:error-sku-required"),
   }),
-  price: yup.mixed().when("productTypeValue", {
-    is: (productType: {
-      name: string;
-      value: string;
-      [key: string]: unknown;
-    }) => productType?.value === ProductType.Simple,
+  price: yup.mixed().when("product_type", {
+    is: (productType: ProductTypeOption) =>
+      productType?.value === ProductType.Simple,
     then: yup
       .number()
       .typeError("form:error-price-must-number")
@@ -28,12 +23,9 @@ export const productValidationSchema = yup.object().shape({
     .transform((value) => (isNaN(value) ? undefined : value))
     .lessThan(yup.ref("price"), "Sale Price should be less than ${less}")
     .positive("form:error-sale-price-must-positive"),
-  quantity: yup.mixed().when("productTypeValue", {
-    is: (productType: {
-      name: string;
-      value: string;
-      [key: string]: unknown;
-    }) => productType?.value === ProductType.Simple,
+  quantity: yup.mixed().when("product_type", {
+    is: (productType: ProductTypeOption) =>
+      productType?.value === ProductType.Simple,
     then: yup
       .number()
       .typeError("form:error-quantity-must-number")

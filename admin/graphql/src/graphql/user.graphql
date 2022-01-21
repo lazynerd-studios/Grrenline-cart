@@ -3,6 +3,10 @@ mutation UpdateUser($input: UpdateUserInput!) {
     id
     name
     email
+    permissions {
+      id
+      name
+    }
     profile {
       avatar {
         id
@@ -39,4 +43,8 @@ mutation UpdateUser($input: UpdateUserInput!) {
 
 mutation AddPoints($input: AddPointsInput!) {
   addPoints(input: $input)
+}
+
+mutation MakeOrRevokeAdmin($input: MakeOrRevokeAdminInput!) {
+  makeOrRevokeAdmin(input: $input)
 }

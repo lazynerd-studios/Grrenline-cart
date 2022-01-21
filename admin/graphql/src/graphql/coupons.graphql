@@ -90,3 +90,16 @@ mutation DeleteCoupon($id: ID!) {
     active_from
   }
 }
+
+mutation VerifyCoupon($code: String!) {
+  verifyCoupon(code: $code) {
+    is_valid
+    coupon {
+      id
+      code
+      type
+      amount
+      is_valid
+    }
+  }
+}

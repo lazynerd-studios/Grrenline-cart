@@ -19,7 +19,7 @@ class CreateNewMarvelTables extends Migration
             $table->string('title');
             $table->string('price');
             $table->string('sale_price')->nullable();
-            $table->string('quantity');
+            $table->unsignedBigInteger('quantity');
             $table->boolean('is_disable')->default(false);
             $table->string('sku')->nullable();
             $table->json('options');
@@ -49,9 +49,9 @@ class CreateNewMarvelTables extends Migration
             $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
         });
         Schema::table('products', function (Blueprint $table) {
-            $table->float('max_price')->nullable();
-            $table->float('min_price')->nullable();
-            $table->json('video')->nullable();
+            $table->float('min_price')->after('sale_price')->nullable();
+            $table->float('max_price')->after('min_price')->nullable();
+            $table->json('video')->after('image')->nullable();
         });
 
         Schema::table('order_product', function (Blueprint $table) {
@@ -76,7 +76,7 @@ class CreateNewMarvelTables extends Migration
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('shop_id');
-            $table->foreign('shop_id')->references('id')->on('shops');
+            $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
             $table->double('admin_commission_rate')->nullable();
             $table->double('total_earnings')->default(0);
             $table->double('withdrawn_amount')->default(0);

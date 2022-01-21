@@ -33,8 +33,6 @@ const RefundList = ({ refunds, onPagination, refetch }: IProps) => {
   const [order, setOrder] = useState<SortOrder>(SortOrder.Desc);
   const [column, setColumn] = useState<string>();
 
-  console.log(refunds, "refunds");
-
   const debouncedHeaderClick = useMemo(
     () =>
       debounce((value) => {
@@ -44,7 +42,6 @@ const RefundList = ({ refunds, onPagination, refetch }: IProps) => {
           sortedBy: order === SortOrder.Desc ? SortOrder.Asc : SortOrder.Desc,
           orderBy: value,
         });
-        console.log(value);
       }, 500),
     [order]
   );

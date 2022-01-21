@@ -1,7 +1,7 @@
 # import PaginatorParts from './paginator.fragment.graphql'
 fragment ProductParts on Product {
   id
-  # sku
+  sku
   slug
   name
   description
@@ -23,7 +23,26 @@ fragment ProductParts on Product {
   min_price
   max_price
   quantity
+  author {
+    id
+    name
+  }
+  author_id
+  manufacturer_id
+  manufacturer {
+    id
+    name
+  }
   product_type
+  is_digital
+  is_external
+  external_product_url
+  external_product_button_text
+  digital_file {
+    id
+    attachment_id
+    url
+  }
   unit
   gallery {
     id
@@ -98,8 +117,19 @@ query Product($id: ID, $slug: String) {
       title
       price
       quantity
+      is_digital
       is_disable
       sale_price
+      image {
+        id
+        thumbnail
+        original
+      }
+      digital_file {
+        id
+        attachment_id
+        url
+      }
       options {
         name
         value
@@ -149,6 +179,7 @@ mutation UpdateProduct($input: UpdateProductInput!) {
       sku
       title
       price
+      is_digital
       quantity
       is_disable
       sale_price

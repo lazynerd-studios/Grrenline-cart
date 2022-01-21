@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Marvel\Enums\CouponType;
+use Marvel\Enums\ManufacturerType;
 use Marvel\Enums\ProductType;
 use Marvel\Enums\ShippingType;
 
@@ -48,12 +49,44 @@ class CreateMarvelTables extends Migration
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
+
         Schema::create('types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug');
             $table->string('icon')->nullable();
             $table->json('promotional_sliders')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('authors', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->boolean('is_approved')->default(false);
+            $table->json('image')->nullable();
+            $table->json('cover_image')->nullable();
+            $table->string('slug');
+            $table->text('bio')->nullable();
+            $table->text('quote')->nullable();
+            $table->string('born')->nullable();
+            $table->string('death')->nullable();
+            $table->string('languages')->nullable();
+            $table->json('socials')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('manufacturers', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->boolean('is_approved')->default(false);
+            $table->json('image')->nullable();
+            $table->json('cover_image')->nullable();
+            $table->string('slug');
+            $table->unsignedBigInteger('type_id');
+            $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
+            $table->text('description')->nullable();
+            $table->string('website')->nullable();
+            $table->json('socials')->nullable();
             $table->timestamps();
         });
 
@@ -93,14 +126,14 @@ class CreateMarvelTables extends Migration
             $table->id();
             $table->string('name');
             $table->integer('serial');
-            $table->string('color')->nullable();;
+            $table->string('color')->nullable();
             $table->timestamps();
         });
 
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('tracking_number')->unique();
-            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('customer_id')->nullable();
             $table->string('customer_contact');
             $table->unsignedBigInteger('status');
             $table->double('amount');
@@ -260,5 +293,7 @@ class CreateMarvelTables extends Migration
         Schema::dropIfExists('settings');
         Schema::dropIfExists('user_profiles');
         Schema::dropIfExists('attachments');
+        Schema::dropIfExists('authors');
+        Schema::dropIfExists('manufacturers');
     }
 }

@@ -14,6 +14,7 @@ import { animateScroll } from "react-scroll";
 import { Withdraw } from "@ts-types/generated";
 import { useShopQuery } from "@data/shop/use-shop.query";
 import { useCreateWithdrawMutation } from "@data/withdraw/use-withdraw-create.mutation";
+import Label from "@components/ui/label";
 
 type FormValues = {
   amount: number;
@@ -96,8 +97,15 @@ export default function CreateOrUpdateWithdrawForm({ initialValues }: IProps) {
           />
 
           <Card className="w-full sm:w-8/12 md:w-2/3">
+            <Label>
+              {t("form:input-label-amount")}{" "}
+              <span className="text-xs text-body">
+                ({t("common:text-available-balance")}:{" "}
+                <span className="font-bold text-accent">$119.50</span>)
+              </span>
+            </Label>
             <Input
-              label={t("form:input-label-amount")}
+              // label={t("form:input-label-amount")}
               {...register("amount")}
               error={t(errors.amount?.message!)}
               variant="outline"

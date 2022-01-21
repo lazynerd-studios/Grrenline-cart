@@ -1,6 +1,6 @@
 {
   "name": "marvel-admin",
-  "version": "4.3.0",
+  "version": "4.4.1",
   "private": true,
   "repository": "git@github.com:tarex/marvel-admin.git",
   "author": "RedQ, Inc <redqteam@gmail.com>",
@@ -19,7 +19,7 @@
     "start:gql": "yarn workspace @marvel/admin-graphql start"
   },
   "devDependencies": {
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.1",
     "rimraf": "^3.0.2"
   },
   "license": "LICENSE"

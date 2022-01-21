@@ -20,7 +20,7 @@ const fetchCategories = async ({
     limit = 15,
     orderBy = "updated_at",
     sortedBy = "DESC",
-    parent = null,
+    parent,
   } = params as CategoriesQueryOptionsType;
 
   const searchString = stringifySearchQuery({
@@ -32,7 +32,7 @@ const fetchCategories = async ({
     searchJoin: "and",
     orderBy,
     sortedBy,
-    parent,
+    ...(typeof parent === undefined ? {} : { parent }),
     limit: limit.toString(),
     ...(page && { page: page.toString() }),
     ...(Boolean(searchString) && { search: searchString }),

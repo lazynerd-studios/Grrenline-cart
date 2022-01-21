@@ -9,11 +9,11 @@ import { useState } from "react";
 import { useProductsQuery } from "@data/product/products.query";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import SortForm from "@components/common/sort-form";
 import CategoryTypeFilter from "@components/product/category-type-filter";
 import cn from "classnames";
 import { ArrowDown } from "@components/icons/arrow-down";
 import { ArrowUp } from "@components/icons/arrow-up";
+import { adminOnly } from "@utils/auth-utils";
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,8 +24,6 @@ export default function ProductsPage() {
   const [orderBy, setOrder] = useState("created_at");
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
   const [visible, setVisible] = useState(false);
-
-  console.log(sortedBy);
 
   const toggleVisible = () => {
     setVisible((v) => !v);
@@ -92,10 +90,12 @@ export default function ProductsPage() {
             <CategoryTypeFilter
               className="w-full"
               onCategoryFilter={({ slug }: { slug: string }) => {
+                setPage(1);
                 setCategory(slug);
               }}
               onTypeFilter={({ slug }: { slug: string }) => {
                 setType(slug);
+                setPage(1);
               }}
             />
           </div>
@@ -110,6 +110,9 @@ export default function ProductsPage() {
     </>
   );
 }
+ProductsPage.authenticate = {
+  permissions: adminOnly,
+};
 ProductsPage.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({

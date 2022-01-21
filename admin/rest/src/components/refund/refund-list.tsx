@@ -29,9 +29,6 @@ const RefundList = ({ refunds, onSort, onOrder, onPagination }: IProps) => {
   const router = useRouter();
   const { alignLeft } = useIsRTL();
 
-  console.log(router.asPath, "asp", refunds);
-  console.log(refunds);
-
   const [sortingObj, setSortingObj] = useState<{
     sort: SortOrder;
     column: string | null;

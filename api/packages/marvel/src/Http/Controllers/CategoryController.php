@@ -89,10 +89,10 @@ class CategoryController extends CoreController
      * @param int $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($params)
     {
         try {
-            return $this->repository->with(['type', 'parent', 'children'])->findOrFail($id);
+            return $this->repository->with(['type', 'parent', 'children'])->where('id', $params)->orWhere('slug', $params)->firstOrFail();
         } catch (\Exception $e) {
             throw new MarvelException(NOT_FOUND);
         }

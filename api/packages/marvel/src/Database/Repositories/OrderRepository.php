@@ -13,11 +13,15 @@ use Illuminate\Support\Str;
 use Marvel\Database\Models\Balance;
 use Marvel\Database\Models\Coupon;
 use Marvel\Database\Models\Order;
+use Marvel\Database\Models\OrderedFile;
 use Marvel\Database\Models\OrderWalletPoint;
 use Marvel\Database\Models\Wallet;
 use Marvel\Database\Models\Product;
 use Marvel\Database\Models\Settings;
 use Marvel\Database\Models\User;
+use Marvel\Database\Models\Variation;
+use Marvel\Enums\Permission;
+use Marvel\Enums\ProductType;
 use Marvel\Events\OrderCreated;
 use Marvel\Events\OrderReceived;
 use Marvel\Exceptions\MarvelException;
@@ -82,10 +86,19 @@ class OrderRepository extends BaseRepository
      */
     public function storeOrder($request)
     {
-        $user = $request->user();
+
         $useWalletPoints = isset($request->use_wallet_points) ? $request->use_wallet_points : false;
         $request['tracking_number'] = Str::random(12);
-        $request['customer_id'] = $request->user()->id;
+        if ($request->user() && $request->user()->hasPermissionTo(Permission::SUPER_ADMIN) && isset($request['customer_id'])) {
+            $request['customer_id'] =  $request['customer_id'];
+        } else {
+            $request['customer_id'] = $request->user()->id ?? null;
+        }
+        try {
+            $user = User::findOrFail($request['customer_id']);
+        } catch (Exception $e) {
+            $user = null;
+        }
         $discount = $this->calculateDiscount($request);
         if ($discount) {
             $request['paid_total'] = $request['amount'] + $request['sales_tax'] + $request['delivery_fee'] - $discount;
@@ -96,7 +109,7 @@ class OrderRepository extends BaseRepository
             $request['total'] = $request['amount'] + $request['sales_tax'] + $request['delivery_fee'];
         }
         $payment_gateway = $request['payment_gateway'];
-        if ($useWalletPoints) {
+        if ($useWalletPoints && $user) {
             $wallet = $user->wallet;
             $amount = null;
             if (isset($wallet->available_points)) {
@@ -106,7 +119,7 @@ class OrderRepository extends BaseRepository
             if ($amount !== null && $amount <= 0) {
                 $request['payment_gateway'] = 'FULL_WALLET_PAYMENT';
                 $order = $this->createOrder($request);
-                $this->store_order_wallet_point($request['paid_total'], $order->id);
+                $this->storeOrderWalletPoint($request['paid_total'], $order->id);
                 $this->manageWalletAmount($request['paid_total'], $user->id);
                 return $order;
             }
@@ -115,16 +128,16 @@ class OrderRepository extends BaseRepository
         }
         switch ($payment_gateway) {
             case 'CASH_ON_DELIVERY':
-                $order = $this->createOrder($request);
-                if ($useWalletPoints === true) {
-                    $this->store_order_wallet_point(round($request['paid_total'], 2) - $amount, $order->id);
-                    $this->manageWalletAmount(round($request['paid_total'], 2), $user->id);
-                }
-                return $order;
+                return $this->createCashOrder($request, $useWalletPoints, $amount, $user);
+                break;
+            case 'CASH':
+                return $this->createCashOrder($request, $useWalletPoints, $amount, $user);
                 break;
             case 'PAYPAL':
                 // For default gateway no need to set gateway
                 Omnipay::setGateway('PAYPAL');
+                break;
+            default:
                 break;
         }
 
@@ -133,8 +146,8 @@ class OrderRepository extends BaseRepository
             $payment_id = $response->getTransactionReference();
             $request['payment_id'] = $payment_id;
             $order = $this->createOrder($request);
-            if ($useWalletPoints === true) {
-                $this->store_order_wallet_point(round($request['paid_total'], 2) - $amount, $order->id);
+            if ($useWalletPoints === true && $user) {
+                $this->storeOrderWalletPoint(round($request['paid_total'], 2) - $amount, $order->id);
                 $this->manageWalletAmount(round($request['paid_total'], 2), $user->id);
             }
             return $order;
@@ -145,7 +158,17 @@ class OrderRepository extends BaseRepository
         }
     }
 
-    public function store_order_wallet_point($amount, $order_id)
+    public function createCashOrder($request, $useWalletPoints, $amount, $user)
+    {
+        $order = $this->createOrder($request);
+        if ($useWalletPoints === true && $user) {
+            $this->storeOrderWalletPoint(round($request['paid_total'], 2) - $amount, $order->id);
+            $this->manageWalletAmount(round($request['paid_total'], 2), $user->id);
+        }
+        return $order;
+    }
+
+    public function storeOrderWalletPoint($amount, $order_id)
     {
         if ($amount > 0) {
             OrderWalletPoint::create(['amount' =>  $amount, 'order_id' =>  $order_id]);
@@ -208,8 +231,8 @@ class OrderRepository extends BaseRepository
     {
         try {
             $orderInput = $request->only($this->dataArray);
-            $products = $this->processProducts($request['products']);
             $order = $this->create($orderInput);
+            $products = $this->processProducts($request['products'], $request['customer_id'], $order);
             $order->products()->attach($products);
             $this->createChildOrder($order->id, $request);
             $this->calculateShopIncome($order);
@@ -233,12 +256,39 @@ class OrderRepository extends BaseRepository
         }
     }
 
-    protected function processProducts($products)
+    protected function processProducts($products, $customer_id, $order)
     {
         foreach ($products as $key => $product) {
             if (!isset($product['variation_option_id'])) {
                 $product['variation_option_id'] = null;
                 $products[$key] = $product;
+            }
+            try {
+                if ($order->parent_id === null) {
+                    $productData = Product::with('digital_file')->findOrFail($product['product_id']);
+                    if ($productData->product_type === ProductType::SIMPLE) {
+                        if ($productData->is_digital) {
+                            $digital_file = $productData->digital_file;
+                            OrderedFile::create([
+                                'purchase_key' => Str::random(16),
+                                'digital_file_id' => $digital_file->id,
+                                'customer_id' => $customer_id
+                            ]);
+                        }
+                    } else if ($productData->product_type === ProductType::VARIABLE) {
+                        $variation_option = Variation::with('digital_file')->findOrFail($product['variation_option_id']);
+                        if ($variation_option->is_digital) {
+                            $digital_file = $variation_option->digital_file;
+                            OrderedFile::create([
+                                'purchase_key' => Str::random(16),
+                                'digital_file_id' => $digital_file->id,
+                                'customer_id' => $customer_id,
+                            ]);
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                throw new MarvelException(config('shop.app_notice_domain') . 'ERROR.NOT_FOUND');
             }
         }
         return $products;
@@ -288,6 +338,7 @@ class OrderRepository extends BaseRepository
                 'status' => $request->status,
                 'customer_id' => $request->customer_id,
                 'shipping_address' => $request->shipping_address,
+                'billing_address' => $request->billing_address,
                 'customer_contact' => $request->customer_contact,
                 'delivery_time' => $request->delivery_time,
                 'delivery_fee' => 0,
@@ -300,7 +351,7 @@ class OrderRepository extends BaseRepository
             ];
 
             $order = $this->create($orderInput);
-            $order->products()->attach($this->processProducts($cartProduct));
+            $order->products()->attach($this->processProducts($cartProduct,  $request['customer_id'],  $order));
             // event(new OrderReceived($order));
         }
     }

@@ -6,8 +6,10 @@ export const ROUTES = {
   LOGIN: "/login",
   ORDER_STATUS: "/order-status",
   ORDERS: "/orders",
+  CREATE_ORDER: "/orders/create",
   PRODUCTS: "/products",
   COUPONS: "/coupons",
+  VERIFY_COUPONS: "/coupons/verify",
   USERS: "/users",
   TAXES: "/taxes",
   SHIPPINGS: "/shippings",
@@ -24,4 +26,7 @@ export const ROUTES = {
   LOGOUT: "/logout",
   STAFFS: "/staffs",
   REFUNDS: "/refunds",
+  AUTHORS: "/authors",
+  MANUFACTURERS: "/manufacturers",
+  CHECKOUT: "/orders/checkout",
 };

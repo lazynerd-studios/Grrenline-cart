@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "@components/ui/button";
-import { Form } from "@components/ui/form/form";
 import {
   useModalAction,
   useModalState,
@@ -14,12 +13,6 @@ import { animateScroll } from "react-scroll";
 interface FormValues {
   status: any;
 }
-// enum RefundStatus {
-//   APPROVED = "approved",
-//   PENDING = "pending",
-//   REJECTED = "rejected",
-//   PROCESSING = "processing",
-// }
 
 const RefundStatus = [
   {
@@ -64,8 +57,6 @@ const UpdateRefundConfirmationView = () => {
       },
       {
         onError: (error: any) => {
-          console.log(error?.response, "error");
-
           setErrorMessage(error?.response?.data?.message);
           animateScroll.scrollToTop();
         },

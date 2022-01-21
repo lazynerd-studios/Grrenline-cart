@@ -1,6 +1,15 @@
 import Modal from "@components/ui/modal/modal";
 import dynamic from "next/dynamic";
-import { useModalAction, useModalState } from "./modal.context";
+import { MODAL_VIEWS, useModalAction, useModalState } from "./modal.context";
+const AuthorDeleteView = dynamic(
+  () => import("@components/author/author-delete-view")
+);
+const ManufacturerDeleteView = dynamic(
+  () => import("@components/manufacturer/manufacturer-delete-view")
+);
+const ProductVariation = dynamic(
+  () => import("@components/product/variation/variation")
+);
 const UserWalletPointsAddView = dynamic(
   () => import("@components/user/user-wallet-points-add-view")
 );
@@ -54,37 +63,82 @@ const UpdateRefundConfirmationView = dynamic(
 const RefundImageModal = dynamic(
   () => import("@components/refund/refund-image-modal")
 );
+const MakeAdminView = dynamic(() => import("@components/user/make-admin-view"));
+const CreateOrUpdateAddressForm = dynamic(
+  () => import("@components/address/create-or-update")
+);
+const AddOrUpdateCheckoutContact = dynamic(
+  () => import("@components/checkout/contact/add-or-update")
+);
+const SelectCustomer = dynamic(
+  () => import("@components/checkout/customer/select-customer")
+);
+function renderModal(view: MODAL_VIEWS | undefined, data: any) {
+  switch (view) {
+    case "DELETE_PRODUCT":
+      return <ProductDeleteView />;
+    case "DELETE_TYPE":
+      return <TypeDeleteView />;
+    case "DELETE_ATTRIBUTE":
+      return <AttributeDeleteView />;
+    case "DELETE_CATEGORY":
+      return <CategoryDeleteView />;
+    case "DELETE_ORDER":
+      return <OrderDeleteView />;
+    case "DELETE_COUPON":
+      return <CouponDeleteView />;
+    case "DELETE_TAX":
+      return <TaxDeleteView />;
+    case "DELETE_SHIPPING":
+      return <ShippingDeleteView />;
+    case "DELETE_ORDER_STATUS":
+      return <OrderStatusDeleteView />;
+    case "DELETE_TAG":
+      return <TagDeleteView />;
+    case "DELETE_MANUFACTURER":
+      return <ManufacturerDeleteView />;
+    case "DELETE_AUTHOR":
+      return <AuthorDeleteView />;
+    case "BAN_CUSTOMER":
+      return <BanCustomerView />;
+    case "SHOP_APPROVE_VIEW":
+      return <ApproveShopView />;
+    case "SHOP_DISAPPROVE_VIEW":
+      return <DisApproveShopView />;
+    case "DELETE_STAFF":
+      return <RemoveStaffView />;
+    case "UPDATE_REFUND":
+      return <UpdateRefundConfirmationView />;
+    case "ADD_OR_UPDATE_ADDRESS":
+      return <CreateOrUpdateAddressForm />;
+    case "ADD_OR_UPDATE_CHECKOUT_CONTACT":
+      return <AddOrUpdateCheckoutContact />;
+    case "REFUND_IMAGE_POPOVER":
+      return <RefundImageModal />;
+    case "MAKE_ADMIN":
+      return <MakeAdminView />;
+    case "EXPORT_IMPORT_PRODUCT":
+      return <ExportImportView />;
+    case "EXPORT_IMPORT_ATTRIBUTE":
+      return <AttributeExportImport />;
+    case "ADD_WALLET_POINTS":
+      return <UserWalletPointsAddView />;
+    case "SELECT_PRODUCT_VARIATION":
+      return <ProductVariation productSlug={data} />;
+    case "SELECT_CUSTOMER":
+      return <SelectCustomer />;
+    default:
+      return null;
+  }
+}
 
 const ManagedModal = () => {
-  const { isOpen, view } = useModalState();
+  const { isOpen, view, data } = useModalState();
   const { closeModal } = useModalAction();
 
   return (
-    // <Modal
-    //   open={isOpen}
-    //   containerClassName="max-w-sm"
-    //   // useBlurBackdrop={true}
-    // >
     <Modal open={isOpen} onClose={closeModal}>
-      {view === "DELETE_PRODUCT" && <ProductDeleteView />}
-      {view === "DELETE_TYPE" && <TypeDeleteView />}
-      {view === "DELETE_ATTRIBUTE" && <AttributeDeleteView />}
-      {view === "DELETE_CATEGORY" && <CategoryDeleteView />}
-      {view === "DELETE_ORDER" && <OrderDeleteView />}
-      {view === "DELETE_COUPON" && <CouponDeleteView />}
-      {view === "DELETE_TAX" && <TaxDeleteView />}
-      {view === "DELETE_SHIPPING" && <ShippingDeleteView />}
-      {view === "DELETE_ORDER_STATUS" && <OrderStatusDeleteView />}
-      {view === "DELETE_TAG" && <TagDeleteView />}
-      {view === "BAN_CUSTOMER" && <BanCustomerView />}
-      {view === "SHOP_APPROVE_VIEW" && <ApproveShopView />}
-      {view === "SHOP_DISAPPROVE_VIEW" && <DisApproveShopView />}
-      {view === "DELETE_STAFF" && <RemoveStaffView />}
-      {view === "UPDATE_REFUND" && <UpdateRefundConfirmationView />}
-      {view === "ADD_WALLET_POINTS" && <UserWalletPointsAddView />}
-      {view === "REFUND_IMAGE_POPOVER" && <RefundImageModal />}
-      {view === "EXPORT_IMPORT_PRODUCT" && <ExportImportView />}
-      {view === "EXPORT_IMPORT_ATTRIBUTE" && <AttributeExportImport />}
+      {renderModal(view, data)}
     </Modal>
   );
 };

@@ -72,6 +72,16 @@ export const siteSettings = {
         icon: "TagIcon",
       },
       {
+        href: ROUTES.MANUFACTURERS,
+        label: "sidebar-nav-item-manufacturers",
+        icon: "DiaryIcon",
+      },
+      {
+        href: ROUTES.AUTHORS,
+        label: "sidebar-nav-item-authors",
+        icon: "FountainPenIcon",
+      },
+      {
         href: ROUTES.ORDERS,
         label: "sidebar-nav-item-orders",
         icon: "OrdersIcon",
@@ -80,6 +90,11 @@ export const siteSettings = {
         href: ROUTES.ORDER_STATUS,
         label: "sidebar-nav-item-order-status",
         icon: "OrdersStatusIcon",
+      },
+      {
+        href: ROUTES.CREATE_ORDER,
+        label: "sidebar-nav-item-create-order",
+        icon: "CalendarScheduleIcon",
       },
       {
         href: ROUTES.USERS,
@@ -135,6 +150,18 @@ export const siteSettings = {
         label: "sidebar-nav-item-products",
         icon: "ProductsIcon",
         permissions: adminOwnerAndStaffOnly,
+      },
+      {
+        href: (shop: string) => `/${shop}${ROUTES.AUTHORS}`,
+        label: "sidebar-nav-item-authors",
+        icon: "FountainPenIcon",
+        permissions: adminAndOwnerOnly,
+      },
+      {
+        href: (shop: string) => `/${shop}${ROUTES.MANUFACTURERS}`,
+        label: "sidebar-nav-item-manufacturers",
+        icon: "DiaryIcon",
+        permissions: adminAndOwnerOnly,
       },
       {
         href: (shop: string) => `/${shop}${ROUTES.ORDERS}`,

@@ -19,6 +19,7 @@ import { ModalProvider } from "@components/ui/modal/modal.context";
 import DefaultSeo from "@components/ui/default-seo";
 import PrivateRoute from "@utils/private-route";
 import ManagedModal from "@components/ui/modal/managed-modal";
+import { CartProvider } from "@contexts/quick-cart/cart.context";
 
 const Noop: React.FC = ({ children }) => <>{children}</>;
 
@@ -44,20 +45,22 @@ const CustomApp = ({ Component, pageProps }: AppProps) => {
           <UIProvider>
             <ModalProvider>
               <>
-                <DefaultSeo />
-                {authProps ? (
-                  <PrivateRoute authProps={authProps}>
+                <CartProvider>
+                  <DefaultSeo />
+                  {authProps ? (
+                    <PrivateRoute authProps={authProps}>
+                      <Layout {...pageProps}>
+                        <Component {...pageProps} />
+                      </Layout>
+                    </PrivateRoute>
+                  ) : (
                     <Layout {...pageProps}>
                       <Component {...pageProps} />
                     </Layout>
-                  </PrivateRoute>
-                ) : (
-                  <Layout {...pageProps}>
-                    <Component {...pageProps} />
-                  </Layout>
-                )}
-                <ToastContainer autoClose={2000} theme="colored" />
-                <ManagedModal />
+                  )}
+                  <ToastContainer autoClose={2000} theme="colored" />
+                  <ManagedModal />
+                </CartProvider>
               </>
             </ModalProvider>
           </UIProvider>

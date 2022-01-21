@@ -5,40 +5,20 @@ import Description from "@components/ui/description";
 import Card from "@components/common/card";
 import Label from "@components/ui/label";
 import Title from "@components/ui/title";
-
 import Checkbox from "@components/ui/checkbox/checkbox";
 import SelectInput from "@components/ui/select-input";
-import { cartesian } from "@utils/cartesian";
-import isEmpty from "lodash/isEmpty";
 import { useEffect } from "react";
 import { Product } from "@ts-types/generated";
 import { useTranslation } from "next-i18next";
 import { useAttributesQuery } from "@data/attributes/use-attributes.query";
+import FileInput from "@components/ui/file-input";
+import ValidationError from "@components/ui/form-validation-error";
+import { getCartesianProduct, filterAttributes } from "./form-utils";
 
 type IProps = {
   initialValues?: Product | null;
   shopId: string | undefined;
 };
-
-function filteredAttributes(attributes: any, variations: any) {
-  let res = [];
-  res = attributes?.filter((el: any) => {
-    return !variations?.find((element: any) => {
-      return element?.attribute?.slug === el?.slug;
-    });
-  });
-  return res;
-}
-
-function getCartesianProduct(values: any) {
-  const formattedValues = values
-    ?.map((v: any) =>
-      v.value?.map((a: any) => ({ name: v.attribute.name, value: a.value }))
-    )
-    .filter((i: any) => i !== undefined);
-  if (isEmpty(formattedValues)) return [];
-  return cartesian(...formattedValues);
-}
 
 export default function ProductVariableForm({ shopId, initialValues }: IProps) {
   const { t } = useTranslation();
@@ -59,9 +39,8 @@ export default function ProductVariableForm({ shopId, initialValues }: IProps) {
     control,
     name: "variations",
   });
-  const cartesianProduct = getCartesianProduct(getValues("variations"));
   const variations = watch("variations");
-
+  const cartesianProduct = getCartesianProduct(getValues("variations"));
   const attributes = data?.attributes;
   return (
     <div className="flex flex-wrap my-5 sm:my-8">
@@ -103,12 +82,12 @@ export default function ProductVariableForm({ shopId, initialValues }: IProps) {
                     <div className="mt-5">
                       <Label>{t("form:input-label-attribute-name")}*</Label>
                       <SelectInput
-                        name={`variations[${index}].attribute`}
+                        name={`variations.${index}.attribute`}
                         control={control}
                         defaultValue={field.attribute}
                         getOptionLabel={(option: any) => option.name}
                         getOptionValue={(option: any) => option.id}
-                        options={filteredAttributes(attributes, variations)!}
+                        options={filterAttributes(attributes, variations)!}
                         isLoading={isLoading}
                       />
                     </div>
@@ -117,14 +96,12 @@ export default function ProductVariableForm({ shopId, initialValues }: IProps) {
                       <Label>{t("form:input-label-attribute-value")}*</Label>
                       <SelectInput
                         isMulti
-                        name={`variations[${index}].value`}
+                        name={`variations.${index}.value`}
                         control={control}
                         defaultValue={field.value}
                         getOptionLabel={(option: any) => option.value}
                         getOptionValue={(option: any) => option.id}
-                        options={
-                          watch(`variations[${index}].attribute`)?.values
-                        }
+                        options={watch(`variations.${index}.attribute`)?.values}
                       />
                     </div>
                   </div>
@@ -220,6 +197,45 @@ export default function ProductVariableForm({ shopId, initialValues }: IProps) {
                           variant="outline"
                           className="mb-5"
                         />
+                      </div>
+                      <div>
+                        <Label>{t("form:input-label-image")}</Label>
+                        <FileInput
+                          name={`variation_options.${index}.image`}
+                          control={control}
+                          multiple={false}
+                        />
+                      </div>
+                      <div className="mb-5 mt-5">
+                        <Checkbox
+                          {...register(`variation_options.${index}.is_digital`)}
+                          label={t("form:input-label-is-digital")}
+                        />
+                        {!!watch(`variation_options.${index}.is_digital`) && (
+                          <div className="mt-5">
+                            <Label>{t("form:input-label-digital-file")}</Label>
+                            <FileInput
+                              name={`variation_options.${index}.digital_file_input`}
+                              control={control}
+                              multiple={false}
+                              acceptFile={true}
+                              helperText={t("form:text-upload-digital-file")}
+                            />
+                            <ValidationError
+                              message={t(
+                                errors?.variation_options?.[index]
+                                  ?.digital_file_input?.message
+                              )}
+                            />
+
+                            <input
+                              type="hidden"
+                              {...register(
+                                `variation_options.${index}.digital_file`
+                              )}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="mb-5 mt-5">
                         <Checkbox

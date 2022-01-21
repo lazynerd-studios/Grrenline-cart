@@ -52,5 +52,8 @@
   "table-shipping-type": "运输类型",
   "table-item-available_wallet_points": "可用钱包积分",
   "table-item-order-id": "订单编号",
-  "table-item-customer-email": "客户邮箱"
+  "table-item-customer-email": "客户邮箱",
+  "table-item-is-approved": "被批准",
+  "table-item-approval-action": "审批操作",
+  "table-item-permissions": "权限"
 }

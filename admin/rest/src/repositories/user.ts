@@ -7,6 +7,7 @@ import {
   ForgetPasswordInput,
   VerifyForgetPasswordTokenInput,
   ResetPasswordInput,
+  MakeAdminInput,
 } from "@ts-types/generated";
 import http from "@utils/api/http";
 import Base from "./base";
@@ -45,6 +46,9 @@ class User extends Base<CreateUser, UpdateUser> {
 
   resetPassword = async (url: string, variables: ResetPasswordInput) => {
     return this.http<ResetPasswordInput>(url, "post", variables);
+  };
+  makeAdmin = async (url: string, variables: MakeAdminInput) => {
+    return this.http<MakeAdminInput>(url, "post", variables);
   };
 
   block = async (url: string, variables: { id: number }) => {

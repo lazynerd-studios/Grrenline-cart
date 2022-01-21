@@ -49,5 +49,8 @@
   "table-shipping-type": "Versandart",
   "table-item-available_wallet_points": "Verfügbare Wallet-Punkte",
   "table-item-order-id": "Auftragsnummer",
-  "table-item-customer-email": "Kunden-eMail"
+  "table-item-customer-email": "Kunden-eMail",
+  "table-item-is-approved": "Ist genehmigt",
+  "table-item-approval-action": "Genehmigungsaktion",
+  "table-item-permissions": "Berechtigungen"
 }

@@ -52,5 +52,8 @@
   "table-shipping-type": "סוג משלוח",
   "table-item-available_wallet_points": "נקודות ארנק זמינות",
   "table-item-order-id": "מספר הזמנה",
-  "table-item-customer-email": "מייל של לקוחות"
+  "table-item-customer-email": "מייל של לקוחות",
+  "table-item-is-approved": "מאושר",
+  "table-item-approval-action": "פעולת אישור",
+  "table-item-permissions": "הרשאות"
 }

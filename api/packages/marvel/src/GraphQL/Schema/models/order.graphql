@@ -10,15 +10,13 @@ extend type Query {
             builder: "Marvel\\GraphQL\\Queries\\OrderQuery@fetchOrders"
             defaultCount: 10
         )
-    order(id: ID @eq, tracking_number: String @eq): Order
-        @find
-        @can(ability: "customer")
+    order(id: ID @eq, tracking_number: String @eq): Order @find
 }
 
 type Order {
     id: ID!
     tracking_number: String!
-    customer_id: ID!
+    customer_id: ID
     customer_contact: String!
     customer: User @belongsTo
     refund: Refund @hasOne
@@ -95,6 +93,7 @@ input CreateOrderInput {
     payment_gateway: PaymentGatewayType! @rules(apply: ["required"])
     coupon_id: ID
     shop_id: ID
+    customer_id: ID
     discount: Float
     use_wallet_points: Boolean
     delivery_fee: Float
@@ -109,7 +108,6 @@ extend type Mutation {
     deleteOrder(id: ID!): Order @delete @can(ability: "super_admin")
     createOrder(input: CreateOrderInput! @spread): Order
         @field(resolver: "OrderMutator@store")
-        @can(ability: "customer")
     updateOrder(input: UpdateOrderInput! @spread): Order
         @field(resolver: "OrderMutator@update")
 }

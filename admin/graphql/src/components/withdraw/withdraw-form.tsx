@@ -14,6 +14,7 @@ import { useState } from "react";
 import Alert from "@components/ui/alert";
 import { animateScroll } from "react-scroll";
 import { Withdraw } from "__generated__/__types__";
+import Label from "@components/ui/label";
 
 type FormValues = {
   amount: number;
@@ -80,7 +81,7 @@ export default function CreateOrUpdateWithdrawForm({ initialValues }: IProps) {
     <>
       {errorMessage ? (
         <Alert
-          message={t(`common:${errorMessage}`)}
+          message={t(errorMessage)}
           variant="error"
           closeable={true}
           className="mt-5"
@@ -100,8 +101,15 @@ export default function CreateOrUpdateWithdrawForm({ initialValues }: IProps) {
           />
 
           <Card className="w-full sm:w-8/12 md:w-2/3">
+            <Label>
+              {t("form:input-label-amount")}{" "}
+              <span className="text-xs text-body">
+                ({t("common:text-available-balance")}:{" "}
+                <span className="font-bold text-accent">$119.50</span>)
+              </span>
+            </Label>
             <Input
-              label={t("form:input-label-amount")}
+              // label={t("form:input-label-amount")}
               {...register("amount")}
               error={t(errors.amount?.message!)}
               variant="outline"
